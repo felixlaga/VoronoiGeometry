@@ -31,3 +31,9 @@ Seeded at T0 from IMPLEMENTATION_SPEC Sec. 6; updated as tasks complete.
   percolation; window spread 0.15. A free-volume-motivated form is needed.
 - Whether any of these structures is thermodynamically relevant at `T > 0` is
   entirely open, in 3D as in 2D.
+- **REFERENCE_VALUES.json `family_2d.K1_maple_leaf.phi` decimal is off by
+  ~4e-13 from its own exact string** `sqrt3*pi/7` (0.7773425846722069 quoted vs
+  0.77734258467180757... exact; found by the T3 sympy certificates, which
+  prove the exact value symbolically). The file is immutable, so the decimal
+  stays; every gate uses 1e-12 or looser and is unaffected. Fix the decimal in
+  the next revision of the golden file, outside this repository's rules.
