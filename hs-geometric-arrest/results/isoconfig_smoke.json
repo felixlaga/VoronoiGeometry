@@ -1,0 +1,39 @@
+{
+  "delta_r2_mean": -0.01588839999781348,
+  "delta_r2_spread": 0.03106776096796973,
+  "folds": [
+    {
+      "fold": 0,
+      "r2_base": 0.03803002361738772,
+      "r2_full": -0.011838902883176683,
+      "delta_r2": -0.0498689265005644
+    },
+    {
+      "fold": 1,
+      "r2_base": 0.05963417812745142,
+      "r2_full": 0.05077619020191515,
+      "delta_r2": -0.00885798792553627
+    },
+    {
+      "fold": 2,
+      "r2_base": 0.062221490436105475,
+      "r2_full": 0.07328320486876572,
+      "delta_r2": 0.011061714432660241
+    }
+  ],
+  "baseline": [
+    "local_eta",
+    "psi6",
+    "anisotropy",
+    "V_cell"
+  ],
+  "structural": [
+    "s_K1_maple_leaf",
+    "s_K2_kagome",
+    "s_K3_honeycomb",
+    "cluster_size[K1_maple_leaf]",
+    "persistence"
+  ],
+  "smoke": true,
+  "verdict_note": "delta_r2 <= 0 within its spread means the structural fields add no held-out predictive power beyond the baseline: the hypothesis fails de Graaf's own standard"
+}

@@ -1,0 +1,469 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.4cm]{geometry}
+% PREVIEW BUILD. For submission restore:
+%   \documentclass[aps,prl,twocolumn,superscriptaddress,floatfix]{revtex4-2}
+\newenvironment{ruledtabular}{}{}
+\newcommand{\affiliation}[1]{\\[2pt] \textit{#1}}
+\usepackage{amsmath,amssymb,graphicx,booktabs,hyperref}
+
+\begin{document}
+
+\title{Tangential Voronoi cells as geometric ground states for hard spheres:\\
+exact enumeration in three dimensions and a test of the mechanism}
+
+\author{Felix Laga}
+\affiliation{\emph{[affiliation to be completed]}}
+
+\date{\today}
+
+\begin{abstract}
+De Graaf [arXiv:2411.01199v2] has argued that dynamical arrest in two-dimensional
+hard disks is controlled by geometric ground states: congruent tangential
+tilings whose area fraction equals the isoperimetric quotient of the tile, with
+the floret pentagonal tiling at $\phi=\sqrt{3}\pi/7$ identified with the glass
+transition. We establish the three-dimensional form of that argument. For a
+monodisperse packing inscribed in a congruent tangential honeycomb,
+$\eta = 36\pi V^2/S^3 = Q_{\mathrm{iso}}$, the cube of the Wadell sphericity, so
+the admissibility criterion is that every Voronoi neighbour be a contact. Because
+the seven Voronoi face-class norms are linear functionals of the Selling
+parameters, tangentiality is a linear system and can be enumerated exactly: there
+are precisely three tangential Bravais lattices in three dimensions, and no
+truncated-octahedral solution exists, so BCC-derived cells are excluded
+structurally. Depleting FCC by a vacancy sublattice yields a discrete ladder
+$k\in\{4,5,7,13\}$ with $\eta_k=(1-1/k)\pi/\sqrt{18}$, precisely those $k$ with
+$(k-1)\mid 12$; the two-dimensional analogue $(k-1)\mid 6$ unifies de Graaf's
+floret pentagonal tiling ($k=7$) and his honeycomb caging state ($k=3$) as
+members of one family. We correct four errors in the original
+three-dimensional discussion. Contrary to the claim that no candidate falls in
+the reported glass range $\eta\approx0.58$--$0.64$, three do. We then test the
+mechanism numerically. In a Monte Carlo pilot the proposed contact-fraction
+signature is found to be degenerate with the median Voronoi face gap and shows no
+feature at arrest, while the shell-percolation threshold $\varepsilon^*(\eta)$ is
+composition-independent to $4.3\%$ across very different size distributions. We
+argue that $\varepsilon^*(\eta)$, not the diffusion coefficient, is the estimator
+on which a decisive test should be built.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+The relation between local structure and dynamical arrest in hard-particle
+systems remains unsettled. In two dimensions, de Graaf has recently proposed a
+sharp and unusual answer: that arrest is controlled not by a local structural
+motif in the usual sense, but by proximity to a \emph{geometric ground state}, a
+congruent tiling of the plane whose associated area fraction is picked out by
+geometry alone. The identification rests on an exact statement. For a
+monodisperse packing of disks inscribed in a congruent tangential tiling, the
+area fraction equals the isoperimetric quotient of the tile,
+\begin{equation}
+\phi = q \equiv \frac{4\pi A}{P^2},
+\label{eq:2d}
+\end{equation}
+so that a special value of $\phi$ can be read off a shape descriptor. The floret
+pentagonal tiling, with $\phi=\sqrt{3}\pi/7\approx0.777343$, is then identified
+with the observed glass and frictional jamming transitions, and a honeycomb
+arrangement at $\phi=\pi/(3\sqrt{3})\approx0.6046$ with the onset of caging.
+
+The three-dimensional discussion in that work is explicitly exploratory: several
+candidate structures are constructed from FCC, BCC and diamond arrangements, a
+number of volume fractions are obtained, and the author concludes that the
+possible connection ``should be investigated more closely.''
+
+This paper does two things. First, we close the geometry. We give the exact
+three-dimensional counterpart of Eq.~\eqref{eq:2d}, derive from it a sharp
+admissibility criterion, enumerate the admissible structures completely within
+the Bravais class, and identify a discrete family of depleted close-packed
+states that subsumes both of the two-dimensional structures. In the course of
+this we correct four errors in the original three-dimensional discussion.
+Second, we test the mechanism in a Monte Carlo pilot, and report a negative
+result for the observable that would most directly probe it, together with a
+positive result for a different one.
+
+\section{The three-dimensional analogue of $\phi=q$}
+\label{sec:theorem}
+
+Let a monodisperse packing of spheres of diameter $\sigma$ be such that every
+Voronoi cell is a \emph{tangential} polyhedron whose insphere is the particle
+itself. Decomposing the polyhedron into pyramids of height $\sigma/2$ erected on
+each face gives $V=\sigma S/6$, with $V$ the cell volume and $S$ its surface
+area. Hence
+\begin{equation}
+\eta = \frac{(\pi/6)\sigma^3}{V} = \frac{36\pi V^2}{S^3}
+     \equiv Q_{\mathrm{iso}} = \Psi^3,
+\label{eq:3d}
+\end{equation}
+where $\Psi$ is the Wadell sphericity. Equation~\eqref{eq:3d} is the exact
+analogue of Eq.~\eqref{eq:2d}, and it identifies $Q_{\mathrm{iso}}$ --- not the
+face count, and not the bond-orientational invariants $W_{12,0}$ or $Q_6$ --- as
+the correct three-dimensional counterpart of the shape index $q$.
+
+The tangentiality hypothesis has a direct physical reading:
+\begin{quote}
+\emph{every Voronoi neighbour must be a contact.}
+\end{quote}
+If a single Voronoi face is supported by a non-touching neighbour, that face lies
+farther than $\sigma/2$ from the centre, the pyramid decomposition fails, and
+$\eta \neq Q_{\mathrm{iso}}$. This criterion is the organising principle of what
+follows, and it immediately partitions the candidate structures of the original
+work (Table~\ref{tab:named}).
+
+\begin{table}[t]
+\caption{Named structures. $\eta$ is the packing fraction at contact,
+$Q_{\mathrm{iso}}=36\pi V^2/S^3$, $z$ the number of contacts, and ``faces'' the
+number of non-degenerate Voronoi faces. Values from explicit half-space
+construction of the cells.}
+\label{tab:named}
+\begin{ruledtabular}
+\begin{tabular}{lccccc}
+structure & $\eta$ & $Q_{\mathrm{iso}}$ & faces & $z$ & tang.\\
+\colrule
+FCC & 0.740480 & 0.740480 & 12 & 12 & yes\\
+HCP & 0.740480 & 0.740480 & 12 & 12 & yes\\
+FCC $-$ 1-in-13 & 0.683520 & 0.683520 & 11 & 11 & yes\\
+FCC $-$ 1-in-7  & 0.634698 & 0.634698 & 10 & 10 & yes\\
+simple hex., $c=a$ & 0.604600 & 0.604600 & 8 & 8 & yes\\
+FCC $-$ 1-in-5  & 0.592384 & 0.592384 & 9 & 9 & yes\\
+FCC $-$ 1-in-4  & 0.555360 & 0.555360 & 8 & 8 & yes\\
+simple cubic & 0.523599 & 0.523599 & 6 & 6 & yes\\
+BCC & 0.680175 & 0.753367 & 14 & 8 & \textbf{no}\\
+diamond & 0.340087 & 0.461735 & 16 & 4 & \textbf{no}\\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\section{Complete enumeration of tangential Bravais lattices}
+\label{sec:enum}
+
+By Voronoi's theorem the faces of a lattice Voronoi cell correspond to the seven
+non-zero classes of $L/2L$; a class contributes a non-degenerate face precisely
+when its minimum norm is attained by the pair $\pm v$ alone. Writing the Selling
+parameters $p_{ij}=-b_i\cdot b_j$ of a reduced basis $b_1,b_2,b_3$ with
+$b_4=-(b_1+b_2+b_3)$, the seven class norms are
+\begin{align}
+|b_i|^2 &= \textstyle\sum_{j\neq i} p_{ij},\\
+|b_1+b_2|^2 &= p_{13}+p_{14}+p_{23}+p_{24},
+\end{align}
+and cyclic permutations. Each is a \emph{linear} functional of $p$. Tangentiality
+--- all live class norms equal --- is therefore a linear system, and fixing
+$\sum p_{ij}=1$ makes the shape space of all three-dimensional lattices the
+compact $5$-simplex $\{p\geq0\}$. Solving the system exactly over every live-face
+set and every zero-pattern of $p$ is thus an exhaustive enumeration.
+
+The result is that \emph{exactly three tangential Bravais lattices exist in three
+dimensions}: the simple cubic lattice (cubic cell, $\eta=\pi/6$), the simple
+hexagonal lattice at $c=a$ (hexagonal-prism cell, $\eta=\pi/3\sqrt{3}$), and FCC
+(rhombic dodecahedral cell, $\eta=\pi/\sqrt{18}$).
+
+Two remarks. First, requiring all seven class norms to be equal forces
+$p_{ij}=1/6$ by symmetry, whose class norms are $1/2$ and $2/3$; no fourteen-faced
+tangential cell exists, so the failure of BCC in Table~\ref{tab:named} is
+structural rather than accidental. Second, the enumeration must be posed as a
+linear solve. A numerical minimisation of the spread of face distances over the
+shape space fails, because the objective is non-smooth and because the simple
+cubic and simple hexagonal solutions lie on boundary strata where several
+$p_{ij}$ vanish.
+
+\section{The depleted-lattice ladder: derivation}
+\label{sec:ladder}
+
+De Graaf's two-dimensional states arise by removing particles from the
+close-packed lattice in a regular pattern. We first exhibit the general
+structure, then specialise.
+
+\paragraph{Counting identity.} Let a contact lattice have coordination $z_0$,
+and remove a vacancy set that is \emph{independent} (no two vacancies adjacent)
+and \emph{uniform}: every remaining particle has exactly $K$ vacant neighbours.
+Double-counting occupied--vacant edges gives $z_0 N_v = K N_o$, hence
+\begin{equation}
+\eta_K=\frac{z_0}{z_0+K}\,\eta_{\mathrm{cp}} .
+\label{eq:counting}
+\end{equation}
+For FCC ($z_0=12$, $\eta_{\rm cp}=\pi/\sqrt{18}$) this is
+$\eta_K = 2\sqrt2\,\pi/(12+K)$, identical to the ladder found by our
+sublattice scan with vacancy fraction $1/n$, $n=12/K+1$. The identity requires
+neither congruence nor periodicity; we return to this below.
+
+\paragraph{Independence is forced.} Condition (i) is not an assumption.
+Around an isolated vacancy the surrounding particles are mutually in contact,
+so the vacated volume is partitioned entirely by contact bisectors and every
+cell remains tangential. Around a \emph{divacancy} this fails: particles facing
+each other across the channel acquire Voronoi faces supported at non-contact
+distance. Numerically, a divacancy in FCC produces a face-distance spread of
+$0.414$ in the adjacent cells, against exactly zero for an isolated vacancy.
+Tangentiality therefore implies independence.
+
+\paragraph{Spectral bound.} A uniform-$K$ independent vacancy set is an
+equitable $2$-partition (perfect $2$-colouring) of the contact graph with
+quotient matrix $\bigl(\begin{smallmatrix}0 & z_0\\ K & z_0-K\end{smallmatrix}\bigr)$,
+whose eigenvalues are $z_0$ and $-K$. On an infinite lattice $-K$ must lie in
+the Bloch spectrum of the contact graph. The FCC band is $[-4,12]$, so
+\begin{equation}
+K\leq 4 ,
+\end{equation}
+and the ladder $K\in\{1,2,3,4\}$,
+\begin{equation}
+\eta_K = \frac{2\sqrt2\,\pi}{12+K}
+= 0.683520,\ 0.634698,\ 0.592384,\ 0.555360,
+\label{eq:ladder}
+\end{equation}
+with $z_K = 12-K$ contacts, is \emph{complete} within this class. Explicit
+periodic realisations exist for every $K$: deleting FCC sites with
+$x,y,z$ all even ($K=4$), $y+2z\equiv0\ (5)$ ($K=3$),
+$x+2y+3z\equiv0\ (7)$ ($K=2$), and $x+3y+4z\equiv0\ (13)$ ($K=1$, a perfect
+one-error-correcting code on FCC). All four were verified to be uniform,
+independent, tangential and congruent, with face vectors
+$3^8$, $3^24^7$, $4^{10}$, $4^{11}$. The double-counting identity and the
+$K\le4$ bound were first suggested in an automated review of an earlier version
+of this work; we verify both and add the spectral formulation, the
+independence lemma and the results below.
+
+\paragraph{Two dimensions, corrected.} The triangular contact graph has band
+$[-3,6]$, so $K\leq3$ in two dimensions, and the family is exactly
+\begin{equation}
+\phi_K=\frac{6}{6+K}\,\frac{\pi}{\sqrt{12}}:
+\quad
+\begin{array}{lll}
+K=3 & \text{honeycomb} & 0.604600\\
+K=2 & \text{kagome} & 0.680175\\
+K=1 & \text{maple-leaf} & 0.777343 .
+\end{array}
+\end{equation}
+All three were verified tangential by direct construction, with
+$\phi=q$ exact. De Graaf's floret pentagonal tiling is the $K=1$ maple-leaf
+state and his honeycomb caging state is $K=3$; the remaining rung, the kagome
+lattice at $\phi=\sqrt3\pi/8=0.680175$, is a novel falsifiable prediction lying
+inside the density range any 2D study already sweeps. An earlier version of
+this work additionally listed a putative $\phi=0.453450$ member; that state
+would require $K=6>3$ and $z=0$ and is hereby retracted.
+
+\paragraph{Isostaticity.} With $z_K = z_0-K$, the 2D family contains both
+isostatic numbers exactly: the honeycomb has $z=3=d+1$ (frictional) and the
+kagome has $z=4=2d$ (frictionless), while the maple-leaf glass state is
+hyperstatic at $z=5$. The 3D ladder, $z_K=8,9,10,11$, contains \emph{neither}
+3D isostatic number; $z=2d=6$ is instead supplied by the simple cubic lattice
+of Sec.~\ref{sec:enum}. If rigidity rather than tiling selects the arrest
+density, two and three dimensions must behave differently.
+
+\paragraph{Degeneracy of the reference states.} Because
+Eq.~\eqref{eq:counting} requires no periodicity, we enumerated \emph{all}
+uniform-$K$ independent sets on small tori. On a $6\times6$ triangular torus
+with $K=2$ there are four translation-orbits of solutions, of which only one is
+a lattice coset (the kagome pattern). Checking the non-crystalline states cell
+by cell: every cell is exactly tangential, every cell has
+$Q=0.680175$ to machine precision, and the global density equals
+$\sqrt3\pi/8$ exactly. The geometric reference state at $\phi_K$ is therefore
+not a single crystal but a degenerate family containing disordered members.
+This bears directly on the thermodynamic objection discussed in
+Sec.~\ref{sec:disc}: whether the degeneracy is extensive is a sharp
+combinatorial question left open here.
+
+\paragraph{Beyond FCC.} The HCP contact graph has Bloch bands spanning
+$[-4,12]$, so $-K$ lies in band for all $K\leq4$: uniform-$K$ states on HCP
+pass the necessary spectral condition. If they exist they sit at the same
+densities as Eq.~\eqref{eq:ladder} with different cell topologies, so density
+alone cannot identify the reference structure; the face-adjacency topology must
+be measured. Finally, the ladder does not exhaust the admissible list: the
+simple cubic ($0.523599$) and simple hexagonal ($0.604600$) lattices of
+Sec.~\ref{sec:enum} are tangential but not FCC depletions.
+
+\section{Corrections to the three-dimensional discussion}
+\label{sec:corrections}
+
+All four items below are reproducible from the accompanying code.
+
+\paragraph{BCC vacancy neighbour count.} The original reports ``4 nearest
+neighbours for which the hexagonal face is extended,''
+$\eta=4\sqrt3\pi/35\approx0.621874$. A BCC vacancy has \emph{eight} nearest
+neighbours. Their cells have $V/V_0=71/64$, giving
+$\eta = 8\sqrt3\pi/71 = 0.613115$. The six next-nearest values,
+$V/V_0=49/48$ and $\eta=6\sqrt3\pi/49=0.666294$, are correct. With eight and six
+the vacancy volume balances exactly,
+$8\times0.109375 + 6\times0.020833 = 1.000000\,V_0$; with the stated counts it
+does not. Both cell types are non-tangential ($Q_{\mathrm{iso}}=0.713$ and
+$0.724$ against $\eta=0.613$ and $0.666$), so averaging them to obtain
+$\approx0.644$ carries no geometric content.
+
+\paragraph{Tetrahedral-octahedral honeycomb.} The original states that ``each of
+the two tetrahedra to an octahedron contributes $1/4$ of its volume.'' An
+octahedron in that honeycomb has eight faces and hence eight adjacent tetrahedra,
+each shared among four octahedra, contributing two tetrahedra of volume in total
+rather than one half. The stated cell fills only three quarters of space.
+Corrected, $\eta = 2\sqrt3\pi/27 \approx 0.40307$ rather than
+$8\pi/(27\sqrt3)\approx0.537422$, and the cell reduces to the FCC rhombic
+dodecahedron. The reported agreement with frictional random loose packing at
+$\eta\approx0.536$ does not survive.
+
+\paragraph{Two-dimensional honeycomb depletion fraction.} Section VIII\,B states
+that ``two out of three particles are removed, with the remaining ones forming a
+regular honeycomb lattice.'' Removing two in three leaves a sparser triangular
+lattice. The honeycomb is one in three removed, consistent with the value
+$\phi=\pi/(3\sqrt3)=(2/3)\pi/\sqrt{12}$ quoted in the same paragraph.
+
+\paragraph{Candidates in the glass range.} The original reports that a
+preliminary search revealed no candidate structure falling in the reported
+three-dimensional glass-transition range $\eta\approx0.58$--$0.64$. Three do: $\eta_3=0.592384$, $0.604600$ (simple hexagonal at $c=a$) and
+$\eta_2=0.634698$. The first and last coincide, to within the quoted precision,
+with the avoided mode-coupling density $\varphi_{\rm MCT}\approx0.592$ and the
+relaxation-divergence estimate $\varphi_0\approx0.635$ of Berthier and Witten
+[Phys.\ Rev.\ E \textbf{80}, 021502 (2009)].
+
+We stress that this last point is not evidence in favour of the hypothesis. The
+admissible values are dense between $0.52$ and $0.74$, with typical spacing
+$0.04$, while the literature places the three-dimensional glass transition
+anywhere in $0.588$--$0.639$. Matching a measured arrest density to a tabulated
+value is therefore nearly free, and far weaker than the corresponding
+two-dimensional coincidence, where $0.777$ was isolated. Any test must be
+mechanistic.
+
+\section{Numerical test}
+
+\subsection{Method}
+
+We use NVT hard-sphere Monte Carlo with local displacement moves, which provides
+a stochastic dynamics standing as a proxy for the Brownian dynamics of the
+colloidal experiments the two-dimensional work targets. Swap moves are used
+during equilibration and switched off for production. Configurations are
+initialised on an FCC lattice at the target density with equal radii, melted, and
+the target size distribution is then imposed and the resulting overlaps annealed
+to exactly zero. Every final overlap audit returned zero overlapping particles.
+
+$N=864$; two compositions, a $10\%$ Gaussian polydisperse system and a binary
+$1{:}1$ mixture at $R=0.714$; $\eta$ from $0.40$ to $0.62$. Structure is analysed
+with radical Voronoi cells built by half-space intersection.
+
+Two gates were imposed. The equation of state from the contact value of $g(r)$
+agrees with Carnahan--Starling to $0.04\%$ at $\eta=0.30$ ($1.4\%$ at $0.40$,
+$4.0\%$ at $0.45$; the drift is the linear extrapolation window, not the engine).
+The Voronoi pipeline reproduces the tabulated $Q_{\mathrm{iso}}$ of every perfect
+tangential lattice to $10^{-8}$ and returns a contact fraction of $8/14$ for BCC.
+
+\subsection{Arrest density is estimator-limited}
+
+The diffusion coefficient falls four orders of magnitude and the mean-squared
+displacement exponent collapses from $1.0$ to $\approx0$ between $\eta=0.56$ and
+$0.60$. Fitting $D = A(\eta_a-\eta)^b$ over $\eta\geq0.48$ gives
+$\eta_a=0.6122\pm0.0117$ (polydisperse) and $0.6257\pm0.0121$ (binary). These
+uncertainties are not meaningful: varying the fit window gives
+$0.599/0.612/0.622/0.884$ for the same polydisperse data. The window systematic
+exceeds the statistical error by an order of magnitude, and the pilot constrains
+$\eta_a$ only to roughly $0.60$--$0.63$, which straddles two admissible values
+and discriminates nothing.
+
+\subsection{The contact-fraction signature is degenerate}
+
+The most direct probe of the mechanism is the fraction of Voronoi faces that are
+contacts, which the criterion of Sec.~\ref{sec:theorem} requires to approach
+unity. As written it is unmeasurable: exact contact has measure zero in a thermal
+hard-sphere fluid, and at a strict tolerance the contact fraction is $\sim10^{-3}$
+at every density. Reformulated as $f_c(\delta)$ using the face gap
+$g_{ij}=(r_{ij}-\sigma_{ij})/\sigma_{ij}$, it is measurable: the median gap falls
+from $0.248$ at $\eta=0.44$ to $0.054$ at $\eta=0.62$.
+
+However, the gap distribution proves to be single-scale. Rescaling $\delta$ by the
+median gap collapses $f_c(\delta,\eta)$ across all densities: the small-$\delta$
+ratio $f_c/(\delta/\mathrm{median})$ is $0.79, 0.81, 0.93, 0.84, 0.86, 0.92$ for
+$\eta=0.44$ to $0.62$, constant within scatter. A single-scale distribution
+carries no information beyond its own median, and
+$\mathrm{d}\ln(\mathrm{median})/\mathrm{d}\eta$ steepens monotonically
+($-6.4,-7.3,-9.0,-10.5,-13.6$) with no inflection, cusp or saturation near
+arrest. The observable is thus not merely null here; it is degenerate with a
+quantity that varies smoothly through the transition. Any repair must probe the
+\emph{arrangement} of near-contact faces rather than their number.
+
+Consistently, the mean isoperimetric quotient $\langle Q_{\mathrm{iso}}\rangle$
+rises with $\eta$ and passes through a maximum, at $\eta=0.60$ (polydisperse) and
+$\eta=0.58$ (binary). This is the analogue of the two-dimensional
+$\max_\phi(n_{\bar q})$, which is explicitly the composition-\emph{dependent}
+feature there; ours likewise moves with composition and is not evidence for a
+selected state.
+
+\subsection{Shell percolation is composition-independent}
+
+\begin{table}[t]
+\caption{Shell-percolation threshold $\varepsilon^*(\eta)$, in units of the mean
+diameter, at which the inflated contact network first wraps the box in all three
+directions. Three configurations per point.}
+\label{tab:perc}
+\begin{ruledtabular}
+\begin{tabular}{lccc}
+$\eta$ & polydisperse & binary & rel.\ diff.\\
+\colrule
+0.40 & 0.02731 & 0.02811 & 2.9\%\\
+0.44 & 0.02154 & 0.01938 & 10.6\%\\
+0.48 & 0.01613 & 0.01565 & 3.0\%\\
+0.50 & 0.01248 & 0.01408 & 12.0\%\\
+0.52 & 0.01179 & 0.01177 & 0.2\%\\
+0.54 & 0.00999 & 0.01006 & 0.7\%\\
+0.56 & 0.00828 & 0.00843 & 1.8\%\\
+0.58 & 0.00679 & 0.00680 & 0.1\%\\
+0.60 & 0.00534 & 0.00496 & 7.4\%\\
+0.62 & 0.00372 & 0.00256 & 36.9\%\\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+Table~\ref{tab:perc} gives the shell-percolation threshold, obtained by bisection
+with union-find and relative-displacement tracking to detect wrapping clusters.
+For $\eta\leq0.60$ the two compositions agree to $4.3\%$ on average, despite
+representing very different size distributions. Composition independence is, in
+de Graaf's framework, the signature distinguishing a geometric origin from a
+packing-detail one, and this is the only observable in the pilot that displays
+it. The $\eta=0.62$ binary point deviates by $37\%$ and is almost certainly
+under-equilibrated near jamming.
+
+The local exponent $\mathrm{d}\ln\varepsilon^*/\mathrm{d}\eta$ is
+$-5.9,-6.6,-11.0,-7.8,-5.6,-8.8,-9.7,-11.0,-15.0,-18.1$. It steepens overall but
+wiggles at $\eta=0.48$--$0.52$ by more than the quoted spread. With three
+configurations per point that wiggle cannot be separated from noise: no feature
+can be claimed, and none can be excluded. Fitting
+$\varepsilon^*=C(\eta_m-\eta)^p$ returns $\eta_m=0.83$ and $0.76$ with window
+spreads of $0.15$ and $0.13$, indicating the assumed form is wrong near contact
+percolation; restricted windows converge to $0.675$ and $0.633$, bracketing
+random close packing.
+
+\section{Discussion}
+\label{sec:disc}
+
+The geometry of the three-dimensional problem is now settled. The correct shape
+observable is $Q_{\mathrm{iso}}$; the admissibility criterion is that every
+Voronoi neighbour be a contact; there are exactly three tangential Bravais
+lattices; BCC-derived cells are excluded structurally; and the depleted
+close-packed states form the discrete ladder of Eq.~\eqref{eq:ladder}, which
+subsumes both two-dimensional structures of the original work.
+
+The physics is not settled, and our pilot is not able to settle it. Its useful
+contribution is negative and methodological. The observable that would most
+directly test the mechanism is degenerate and shows no feature; the estimator
+originally proposed for the arrest density is dominated by a fit-window
+systematic; and the one observable that behaves well, $\varepsilon^*(\eta)$,
+requires no long-time dynamics at all. This last point substantially reduces the
+cost of a decisive experiment: short equilibrations at many densities with of
+order $10^2$ configurations each, rather than long dynamical runs, suffice to
+resolve the local exponent of $\varepsilon^*(\eta)$ and to test whether any
+feature in it is composition-independent.
+
+The decisive question is accordingly narrow: does the composition-independent
+$\varepsilon^*(\eta)$ curve possess a resolvable feature, and if so does it lie at
+one of $0.523599$, $0.555360$, $0.592384$, $0.604600$, $0.634698$, $0.683520$? A
+negative answer is as informative as a positive one, and given the density of the
+admissible ladder it must be established mechanistically rather than by numerical
+coincidence.
+
+Finally, the thermodynamic objection raised against the two-dimensional
+argument is partially answered by the degeneracy result of
+Sec.~\ref{sec:ladder}: the reference state at $\eta_K$ is not a single
+realisation but a family that provably contains non-crystalline members, all
+exactly tangential at exactly $\eta_K$. If the family is extensive the
+reference states carry configurational entropy, and the mechanism no longer
+requires a fluid to feel a unique crystal. Whether the count grows
+exponentially with system size is a sharp combinatorial question, cheap to
+attack, and in our view the most important open theory item.
+
+\section*{Code and data availability}
+
+All geometry in Secs.~\ref{sec:theorem}--\ref{sec:corrections} is reproduced by
+\texttt{enumerate\_3d\_ground\_states.py} from lattice vectors alone. The Monte
+Carlo engine, analysis pipeline and percolation code are provided.
+
+\end{document}

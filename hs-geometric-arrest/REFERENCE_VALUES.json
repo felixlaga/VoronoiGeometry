@@ -1,0 +1,52 @@
+{
+  "_comment": "Golden values. Every gate compares against THIS file. Tolerances are fixed here and may never be widened in code. Verified three independent ways: float halfspace construction, exact sympy certificates, and scipy/qhull cross-implementation.",
+  "tolerance_exact_geometry": 1e-8,
+  "theorem": "eta = 36*pi*V^2/S^3 = Q_iso, valid iff every Voronoi neighbour is a contact; equivalently S = d*V/R (proved as exact identity)",
+  "tangential_bravais_3d": {
+    "simple_cubic":        {"eta": 0.5235987755982988, "exact": "pi/6",          "faces": 6,  "z": 6},
+    "simple_hexagonal_ca": {"eta": 0.6045997880780726, "exact": "pi/(3*sqrt3)",  "faces": 8,  "z": 8},
+    "fcc":                 {"eta": 0.7404804896930610, "exact": "pi/sqrt18",     "faces": 12, "z": 12},
+    "count_is_complete": 3,
+    "no_14_face_solution": "all seven Selling class norms equal forces p_ij=1/6 giving norms 1/2 and 2/3"
+  },
+  "fcc_depletion_ladder": {
+    "formula": "eta_K = 2*sqrt2*pi/(12+K) = (z0/(z0+K))*eta_cp, K deleted nn per particle",
+    "spectral_bound": "K <= 4 because FCC Bloch band = [-4, 12]",
+    "K4": {"eta": 0.5553603672697957, "exact": "pi/(4*sqrt2)",    "z": 8,  "p_vector": [3,3,3,3,3,3,3,3],           "rule": "x,y,z all even",        "V_exact_intcoords": "8/3",  "S_exact": "8*sqrt2"},
+    "K3": {"eta": 0.5923843917544487, "exact": "2*sqrt2*pi/15",   "z": 9,  "p_vector": [3,3,4,4,4,4,4,4,4],         "rule": "y+2z=0 mod 5"},
+    "K2": {"eta": 0.6346975625940521, "exact": "sqrt2*pi/7",      "z": 10, "p_vector": [4,4,4,4,4,4,4,4,4,4],       "rule": "x+2y+3z=0 mod 7"},
+    "K1": {"eta": 0.6835204520243637, "exact": "2*sqrt2*pi/13",   "z": 11, "p_vector": [4,4,4,4,4,4,4,4,4,4,4],     "rule": "x+3y+4z=0 mod 13", "V_exact_intcoords": "13/6", "S_exact": "13*sqrt2/2"},
+    "independence_is_forced": "divacancy in FCC gives face-distance spread 0.4142 (= sqrt2 - 1) in adjacent cells; isolated vacancy gives 0"
+  },
+  "family_2d": {
+    "spectral_bound": "K <= 3 because triangular Bloch band = [-3, 6]; the once-claimed phi=0.453450 rung (K=6, z=0) is RETRACTED",
+    "K3_honeycomb":  {"phi": 0.6045997880780726, "exact": "pi/(3*sqrt3)", "z": 3, "note": "z = d+1, frictional isostatic"},
+    "K2_kagome":     {"phi": 0.6801747615878316, "exact": "sqrt3*pi/8",   "z": 4, "note": "z = 2d, frictionless isostatic; NOVEL prediction"},
+    "K1_maple_leaf": {"phi": 0.7773425846722069, "exact": "sqrt3*pi/7",   "z": 5, "note": "de Graaf's floret pentagonal tiling"}
+  },
+  "degeneracy_counts": {
+    "tri_4x4_K2": {"solutions": 16, "orbits": 4, "cosets": 4},
+    "tri_6x6_K3": {"solutions": 3,  "orbits": 1, "cosets": 1},
+    "tri_6x6_K2": {"solutions": 40, "orbits": 4, "cosets": 1,
+                   "note": "3 non-coset orbits; every cell of every solution exactly tangential with Q = sqrt3*pi/8"}
+  },
+  "inadmissible": {
+    "bcc":     {"eta": 0.6801747615878316, "Q_iso": 0.7533666, "faces": 14, "z": 8},
+    "diamond": {"eta": 0.3400873807939158, "Q_iso": 0.4617350, "faces": 16, "z": 4}
+  },
+  "de_graaf_corrections": {
+    "bcc_vacancy_nn": {"paper_says": 4, "correct": 8, "eta_correct": "8*sqrt3*pi/71 = 0.613115", "bookkeeping": "8*(7/64) + 6*(1/48) = 1 V0 exactly"},
+    "tet_oct":        {"paper_eta": 0.537422, "correct_eta": "2*sqrt3*pi/27 = 0.403067", "error": "8 adjacent tetrahedra, not 2; cell reduces to rhombic dodecahedron"},
+    "honeycomb_2d":   {"paper_says": "remove 2 in 3", "correct": "remove 1 in 3"}
+  },
+  "literature_context_not_evidence": {
+    "berthier_witten_pre80_021502": {"phi_MCT": 0.592, "phi_0": 0.635, "warning": "2-3 sig figs, avoided/extrapolated fits, system-dependent (Brambilla: 0.637); never cite sub-1e-3 agreement as evidence"}
+  },
+  "engine_gates": {
+    "eos_carnahan_starling_max_reldev_eta030": 0.01,
+    "pipeline_Q_max_abs_err_on_perfect_lattices": 1e-6,
+    "bcc_contact_fraction": 0.5714285714285714,
+    "statistics_floor_configs_per_density": 500,
+    "calibration": "2.2% fractional sem at 12 configs, N=504; 1% feature at 3 sigma needs ~510"
+  }
+}
