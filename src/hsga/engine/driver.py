@@ -299,7 +299,9 @@ def write_manifest(path: str | os.PathLike, runs: list[dict], **extra) -> dict:
         cc_version = v.stdout.splitlines()[0] if v.stdout else ""
     man = {
         "engine_sources_sha256": {
-            n: _sha256(engine_source(n)) for n in ("hsmc", "hsmc2d", "edmd")
+            n: _sha256(engine_source(n))
+            for n in ("hsmc", "hsmc2d", "edmd")
+            if engine_source(n).exists()
         },
         "cflags": _CFLAGS,
         "cc": cc,
