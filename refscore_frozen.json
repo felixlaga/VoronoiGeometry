@@ -1,0 +1,19 @@
+{
+  "_comment": "PRE-REGISTERED refscore weights and thresholds (IMPLEMENTATION_SPEC 2.5c). Committed at T0, in the repository's first commit, BEFORE any dynamical dataset exists that it could be applied to. Gate G5 verifies that this file's git blob is identical to the first-commit version. Every choice below is a priori and untuned: equal weights because no data existed to prefer one term, and round-number thresholds chosen before any refscore was ever evaluated on a fluid configuration. IMMUTABLE after T0.",
+  "version": 1,
+  "score": "s_k(i) = w_Q * ((Q_i - eta_k)/eta_k)^2 + w_p * d_p(pvec_i, pvec_k) + w_t * eps_t(i)^2",
+  "weights": { "w_Q": 1.0, "w_p": 1.0, "w_t": 1.0 },
+  "tangentiality_defect": "eps_t(i)^2 = mean over KEPT faces j of ((l_ij - R_i)/R_i)^2, l_ij = face-plane distance from site i",
+  "p_distance": "d_p(a, b) = sum_i |a'_i - b'_i| / (sum_i a'_i + sum_i b'_i), where a', b' are the sorted p-vectors zero-padded to equal length; 0 = identical topology, 1 = maximal mismatch",
+  "face_filter": { "g_cut": 0.05, "a_cut": 0.01,
+    "_rule": "a face is DROPPED iff gap > g_cut AND area/S_total < a_cut (spec 2.5b)" },
+  "persistence_grid": {
+    "g_grid": [0.01, 0.02, 0.03, 0.05, 0.08, 0.12],
+    "a_grid": [0.002, 0.005, 0.01, 0.02, 0.04]
+  },
+  "mark_threshold": 0.10,
+  "_mark": "a cell is marked as k-like for P_wrap^(k) iff s_k < mark_threshold",
+  "references_3d": ["K1", "K2", "K3", "K4", "simple_cubic", "simple_hexagonal_ca", "fcc"],
+  "references_2d": ["K1_maple_leaf", "K2_kagome", "K3_honeycomb"],
+  "reference_descriptors": "eta_k / phi_k and reference p-vectors are the exact values of REFERENCE_VALUES.json, computed by the geometry modules at runtime; only the weights, filter, grids and threshold are frozen here"
+}

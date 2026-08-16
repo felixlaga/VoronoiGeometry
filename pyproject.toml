@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hs-geometric-arrest"
+version = "0.1.0"
+description = "Tangential Voronoi cells as geometric ground states for hard spheres: exact enumeration, derivation of the depletion ladder, and the machinery to test the mechanism"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Felix Laga" }]
+dependencies = ["numpy>=1.24", "scipy>=1.10", "sympy>=1.12"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "slow: exhaustive scans and sympy certificates; deselect with -m 'not slow'",
+    "engine: requires a C compiler to build the Monte Carlo engines",
+]
+filterwarnings = ["error::RuntimeWarning"]
