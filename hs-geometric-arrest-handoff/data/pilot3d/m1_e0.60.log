@@ -1,0 +1,5 @@
+N=864 eta=0.6000 L=8.011513 a=1.335252 r0=0.440113 nn=0.944166
+anneal sweeps=8050  final soft energy=0.000e+00
+equilibration done, dmax=0.02482
+production acceptance=0.3199
+final overlap audit: 0 overlapping particles
