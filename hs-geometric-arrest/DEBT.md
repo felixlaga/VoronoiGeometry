@@ -112,7 +112,10 @@ scale, and deliberately NOT executed on this machine)
   implemented, NOT executed** (1e5-sweep equilibrations and N=10976 are hours
   of compute); `make gate-g3` / `make gate-g4` run them as specified.
 - **T8 executed:** gate T8 PASSED 14/14. **G5 executed:** pre-registration
-  proof from git history PASSED.
+  proof from git history PASSED — re-verified after the project's history was
+  grafted into the VoronoiGeometry repository (the gate is layout-aware: it
+  finds the unique root commit containing the frozen files and demands the
+  identical blob in every touching commit; same proof, standalone or nested).
 - **T6 (2D replication, the decision node) NOT run** (~355 core-hours). All
   code exists and the identical path is exercised by `make sweep-2d-smoke`.
   No 3D physics claim is made anywhere in this repository.

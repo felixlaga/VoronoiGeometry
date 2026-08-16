@@ -1,11 +1,20 @@
 """Gate G5 -- pre-registration of the refscore (spec Sec. 3).
 
-Pass criteria: ``refscore_frozen.json`` (and ``REFERENCE_VALUES.json``) are
-byte-identical to the versions in the repository's FIRST commit, and no later
-commit has ever touched them.  Simulation data lives outside version control
-(``data/`` is gitignored), so "committed before the first dynamical dataset it
-is applied to" reduces to: frozen at commit zero, untouched since -- which is
-exactly what this gate proves from the git history.
+Pass criteria: ``refscore_frozen.json`` (and ``REFERENCE_VALUES.json``) enter
+the git history in a ROOT commit -- before any analysis code or campaign data
+existed -- are byte-identical to that version today, and every commit that has
+ever touched them carries that identical blob.  Simulation data lives outside
+version control (``data/`` is gitignored), so "committed before the first
+dynamical dataset it is applied to" reduces to: frozen at the history's
+origin, never modified since -- which is exactly what this gate proves.
+
+The project may live either as a standalone repository or grafted into a
+parent repository under a prefix (its history was merged into VoronoiGeometry
+with ``--allow-unrelated-histories``, preserving the original root commit).
+The gate handles both: it locates the unique root commit containing the
+frozen files and verifies blob identity across every touching commit at both
+the original and the prefixed path.  The proof is the same in both layouts;
+nothing is loosened.
 
 The gate also confirms that ``analysis/refscore.py`` actually reads the frozen
 file (not a copy), so the proof covers the code path in use.
@@ -29,6 +38,13 @@ def _git(*args) -> str:
     return r.stdout
 
 
+def _blob(commitish: str, path: str) -> str | None:
+    """Object id of ``path`` in ``commitish``, or None if absent there."""
+    r = subprocess.run(["git", "rev-parse", f"{commitish}:{path}"],
+                       cwd=REPO, capture_output=True, text=True)
+    return r.stdout.strip() if r.returncode == 0 else None
+
+
 def run(*, verbose: bool = True) -> dict:
     checks = []
 
@@ -37,17 +53,45 @@ def run(*, verbose: bool = True) -> dict:
         if verbose:
             print(f"  [{'ok' if ok else 'FAIL'}] {name}{('  ' + detail) if detail else ''}")
 
-    first = _git("rev-list", "--max-parents=0", "HEAD").strip().splitlines()[0]
+    top = Path(_git("rev-parse", "--show-toplevel").strip()).resolve()
+    prefix = REPO.resolve().relative_to(top).as_posix()  # "." when standalone
+    roots = _git("rev-list", "--max-parents=0", "HEAD").split()
+
+    first = None
     for name in FILES:
-        blob_first = _git("show", f"{first}:{name}")
-        current = (REPO / name).read_text()
-        same = blob_first == current
-        h = hashlib.sha256(current.encode()).hexdigest()[:16]
-        check(f"{name} identical to the first commit ({first[:8]})", same,
-              f"sha256 {h}")
-        touching = _git("log", "--format=%H", "--", name).strip().splitlines()
-        check(f"{name} touched by exactly one commit", len(touching) == 1,
-              f"{len(touching)} commits")
+        paths = [name] if prefix == "." else [name, f"{prefix}/{name}"]
+
+        # the file's frozen blob id, computed from the bytes on disk
+        disk = (REPO / name).read_bytes()
+        frozen = _git("hash-object", str(REPO / name)).strip()
+        h = hashlib.sha256(disk).hexdigest()[:16]
+
+        # exactly one root commit of HEAD's history contains the file
+        roots_with = [r for r in roots if _blob(r, name) is not None]
+        check(f"{name} enters history in exactly one root commit",
+              len(roots_with) == 1,
+              f"{roots_with[0][:8] if len(roots_with) == 1 else roots_with}")
+        if len(roots_with) != 1:
+            continue
+        first = roots_with[0]
+
+        check(f"{name} identical to the root commit ({first[:8]})",
+              _blob(first, name) == frozen, f"sha256 {h}")
+
+        # every commit that ever touched the file carries the identical blob
+        # (":/" anchors the pathspec to the repo root -- ``git log`` pathspecs
+        # are cwd-relative, but ``rev-parse commit:path`` is root-relative;
+        # --full-history keeps the pre-graft line, which default history
+        # simplification would prune at the merge)
+        touching = set()
+        for p in paths:
+            touching |= set(_git("log", "--full-history", "--format=%H",
+                                 "--", f":/{p}").split())
+        bad = [c for c in touching
+               if any(b not in (None, frozen) for b in (_blob(c, p) for p in paths))]
+        check(f"{name} never modified by any touching commit", not bad,
+              f"{len(touching)} touching commit(s)"
+              + (f", DIVERGENT: {[c[:8] for c in bad]}" if bad else ""))
 
     # the refscore module reads THIS file
     from ..analysis import refscore

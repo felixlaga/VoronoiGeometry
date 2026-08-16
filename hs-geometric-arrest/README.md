@@ -185,6 +185,12 @@ data/                      gitignored simulation output
 
 ## Provenance
 
+This project's git history was grafted into the `VoronoiGeometry` repository
+(merge with `--allow-unrelated-histories`); the nine per-task commits and the
+T0 root commit that freezes `REFERENCE_VALUES.json` / `refscore_frozen.json`
+are preserved verbatim, and gate G5 verifies the pre-registration across the
+graft (unique root commit, identical blob in every touching commit).
+
 Every sweep writes a manifest with the exact command lines, engine source
 hashes, compiler and library versions, and per-run logs. Prototype porting
 notes, landmines and file status are in the handoff bundle's
