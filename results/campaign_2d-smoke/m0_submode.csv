@@ -1,0 +1,10 @@
+eta,target,flank_ratio,weight,n
+0.7,honeycomb_K3,nan,0.0,2
+0.7,kagome_K2,nan,0.0,2
+0.7,maple_leaf_K1,nan,0.0,2
+0.775,honeycomb_K3,nan,0.0,2
+0.775,kagome_K2,nan,0.0,2
+0.775,maple_leaf_K1,nan,0.0,2
+0.8,honeycomb_K3,nan,0.0,2
+0.8,kagome_K2,nan,0.0,2
+0.8,maple_leaf_K1,nan,0.0,2

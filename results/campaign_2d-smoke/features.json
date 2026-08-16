@@ -1,0 +1,20 @@
+{
+  "m0": {
+    "features": {
+      "honeycomb_K3": {
+        "tested": false,
+        "note": "only 2 replicas; >= 8 needed"
+      },
+      "kagome_K2": {
+        "tested": false,
+        "note": "only 2 replicas; >= 8 needed"
+      },
+      "maple_leaf_K1": {
+        "tested": false,
+        "note": "only 2 replicas; >= 8 needed"
+      }
+    },
+    "null": {},
+    "msd_fit": null
+  }
+}
