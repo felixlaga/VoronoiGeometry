@@ -196,8 +196,44 @@ def parse_log(path: str | os.PathLike) -> dict:
     return out
 
 
+def _completed_record(spec: RunSpec, argv: list) -> dict | None:
+    """Record of an already-completed run with matching parameters, else None.
+
+    A run counts as complete only if its log carries the engine's final lines
+    (``exit=0`` with a zero overlap audit and the full frame count, or the
+    ``FATAL=anneal_failed`` verdict for an unreachable state point) AND the
+    logged N/seed/eq/prod/nsnap equal the requested spec -- a stale run with
+    different parameters is rerun, never trusted.  Interrupted runs lack the
+    final lines and are rerun; the engine reopens its outputs with mode "w",
+    so partial files are overwritten cleanly.
+    """
+    log_path = f"{spec.prefix}.log"
+    if not os.path.exists(log_path):
+        return None
+    log = parse_log(log_path)
+    want = {"N": spec.N, "seed": spec.seed, "eq": spec.eq,
+            "prod": spec.prod, "nsnap": spec.nsnap}
+    if any(log.get(k) != v for k, v in want.items()):
+        return None
+    rec = {"spec": asdict(spec), "argv": argv, "log": log,
+           "unreachable": False, "resumed": True}
+    if log.get("FATAL") == "anneal_failed":
+        rec["unreachable"] = True
+        rec["reason"] = (
+            f"anneal did not reach zero overlap at eta={spec.eta} mode={spec.mode} "
+            f"(residual energy {log.get('anneal_final_energy')})"
+        )
+        Path(f"{spec.prefix}.cfg").unlink(missing_ok=True)
+        return rec
+    if (log.get("exit") == 0 and log.get("final_overlap_audit") == 0
+            and log.get("frames_written") == spec.nsnap
+            and os.path.exists(f"{spec.prefix}.cfg")):
+        return rec
+    return None
+
+
 def run_one(spec: RunSpec, exe: str | os.PathLike, *,
-            allow_anneal_failure: bool = False) -> dict:
+            allow_anneal_failure: bool = False, resume: bool = False) -> dict:
     """Run one simulation.  Raises on non-zero exit or a non-zero overlap audit.
 
     ``allow_anneal_failure`` turns exit code 3 -- "overlaps could not be
@@ -206,9 +242,18 @@ def run_one(spec: RunSpec, exe: str | os.PathLike, *,
     jamming density has no equilibrated fluid to sample); the run is marked
     ``unreachable``, produces no ``.cfg``, and nothing downstream can mistake
     it for data.  Every other failure still propagates.
+
+    ``resume`` skips a run whose outputs already exist, are complete, and were
+    produced with the identical parameters (see :func:`_completed_record`),
+    synthesising the same record a fresh run would return.  This makes long
+    campaigns interruption-proof without ever trusting partial or stale data.
     """
     Path(spec.prefix).parent.mkdir(parents=True, exist_ok=True)
     argv = spec.argv(exe)
+    if resume:
+        rec = _completed_record(spec, argv)
+        if rec is not None and (allow_anneal_failure or not rec["unreachable"]):
+            return rec
     proc = subprocess.run(argv, capture_output=True, text=True)
     log_path = f"{spec.prefix}.log"
     log = parse_log(log_path) if os.path.exists(log_path) else {}
@@ -251,20 +296,22 @@ def run_edmd(spec: EdmdSpec, exe: str | os.PathLike) -> dict:
 
 
 def _run_one_star(args):
-    spec, exe, allow = args
-    return run_one(spec, exe, allow_anneal_failure=allow)
+    spec, exe, allow, resume = args
+    return run_one(spec, exe, allow_anneal_failure=allow, resume=resume)
 
 
 def run_sweep(specs, exe, *, nproc: int | None = None,
-              allow_anneal_failure: bool = False) -> list[dict]:
+              allow_anneal_failure: bool = False, resume: bool = False) -> list[dict]:
     """Run many simulations in parallel.  Failures propagate (no skips), except
-    anneal failures when ``allow_anneal_failure`` -- see :func:`run_one`."""
+    anneal failures when ``allow_anneal_failure`` -- see :func:`run_one`.
+    ``resume`` skips already-completed runs with identical parameters."""
     specs = list(specs)
     if nproc is None:
         nproc = max(1, (os.cpu_count() or 2) - 1)
     if nproc == 1:
-        return [run_one(s, exe, allow_anneal_failure=allow_anneal_failure) for s in specs]
-    tasks = [(s, exe, allow_anneal_failure) for s in specs]
+        return [run_one(s, exe, allow_anneal_failure=allow_anneal_failure,
+                        resume=resume) for s in specs]
+    tasks = [(s, exe, allow_anneal_failure, resume) for s in specs]
     with ProcessPoolExecutor(max_workers=nproc) as pool:
         return list(pool.map(_run_one_star, tasks))
 

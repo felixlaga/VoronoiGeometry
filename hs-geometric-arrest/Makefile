@@ -104,7 +104,7 @@ sweep-2d-smoke: engines
 	$(PY) scripts/run_analysis.py --data-dir data/2d-smoke --dim 2 --structural $(NPROCFLAG)
 
 campaign-2d: engines
-	$(PY) scripts/run_sweep.py --preset 2d-replication $(NPROCFLAG)
+	$(PY) scripts/run_sweep.py --preset 2d-replication --resume $(NPROCFLAG)
 	$(PY) scripts/run_analysis.py --data-dir data/2d-replication --dim 2 --structural $(NPROCFLAG)
 
 campaign-3d: engines

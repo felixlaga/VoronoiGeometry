@@ -1,5 +1,7 @@
 """The Monte Carlo engines and their driver, exercised at smoke scale."""
 
+import pathlib
+
 import numpy as np
 import pytest
 
@@ -126,3 +128,35 @@ def test_runspec_N():
     s = RunSpec(eta=0.7, prefix="x", dim=2, ncell=12)
     assert s.N == 2 * round(np.sqrt(3) * 12) * 12      # 504, the pilot's N
     assert s.N == 504
+
+
+def test_resume_skips_completed_run_and_distrusts_stale_parameters(tmp_path):
+    import dataclasses
+    import os
+
+    exe = engine_binary("hsmc2d")
+    spec = RunSpec(eta=0.70, prefix=str(tmp_path / "r"), dim=2, ncell=6,
+                   mode=0, seed=42, eq=300, prod=600, nsnap=2, melt=200)
+    rec1 = run_one(spec, exe)
+    assert not rec1.get("resumed")
+    mtime = os.path.getmtime(f"{spec.prefix}.cfg")
+
+    # identical spec, resume=True: skipped, record synthesised from the log
+    rec2 = run_one(spec, exe, resume=True)
+    assert rec2["resumed"] and rec2["log"]["exit"] == 0
+    assert os.path.getmtime(f"{spec.prefix}.cfg") == mtime
+    assert rec2["log"]["seed"] == spec.seed
+
+    # changed parameters at the same prefix: stale outputs are rerun
+    spec3 = dataclasses.replace(spec, prod=800)
+    rec3 = run_one(spec3, exe, resume=True)
+    assert not rec3.get("resumed")
+    assert os.path.getmtime(f"{spec.prefix}.cfg") != mtime
+
+    # interrupted run (log truncated before the final lines): rerun
+    log = pathlib.Path(f"{spec.prefix}.log").read_text()
+    head = log.split("frames_written")[0]
+    pathlib.Path(f"{spec.prefix}.log").write_text(head)
+    rec4 = run_one(spec3, exe, resume=True)
+    assert not rec4.get("resumed")
+    assert rec4["log"]["exit"] == 0

@@ -224,3 +224,25 @@ def test_fit_eta_a_rejects_unphysical_windows():
 def test_fit_eta_a_insufficient_data_returns_nan():
     fit = fit_eta_a([0.5, 0.55], [1e-4, 1e-5])
     assert np.isnan(fit["eta_a"]) and fit["n_windows"] == 0
+
+
+def test_threshold_sweep_arrhenius_vs_pinned():
+    """Constant drift for a smooth exponential slowdown; decelerating,
+    bounded crossings when D vanishes at a fixed density."""
+    from hsga.analysis.dynamics import threshold_sweep
+
+    eta = np.linspace(0.58, 0.82, 60)
+    r = threshold_sweep(eta, 10.0 ** (-(eta - 0.58) / 0.03))
+    assert [c["decade"] for c in r["crossings"]] == list(range(1, 9))
+    assert r["drift_per_decade"] == pytest.approx(0.03, abs=1e-6)
+
+    with np.errstate(invalid="ignore"):
+        D = np.where(eta < 0.78, np.clip(0.78 - eta, 0, None) ** 2.8, np.nan)
+    r2 = threshold_sweep(eta, D)
+    gaps = np.diff([c["eta_x"] for c in r2["crossings"]])
+    assert (gaps > 0).all() and (np.diff(gaps) < 0).all()   # decelerating
+    assert all(c["eta_x"] < 0.78 for c in r2["crossings"])  # bounded by eta_a
+
+    # too little data: NaNs, never an invented drift
+    r3 = threshold_sweep([0.6, 0.7], [1.0, 0.1])
+    assert r3["crossings"] == [] and np.isnan(r3["drift_per_decade"])

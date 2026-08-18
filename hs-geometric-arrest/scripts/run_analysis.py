@@ -44,7 +44,9 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from hsga.analysis.dynamics import diffusion_coefficient, fit_eta_a  # noqa: E402
+from hsga.analysis.dynamics import (  # noqa: E402
+    diffusion_coefficient, fit_eta_a, threshold_sweep,
+)
 from hsga.analysis.percolation import eps_star  # noqa: E402
 from hsga.analysis.pwrap import p_wrap_all_references  # noqa: E402
 from hsga.analysis.voronoi import config_cells, q_submode_weight  # noqa: E402
@@ -279,9 +281,35 @@ def analyse_mode(data_dir: Path, mode_dir: Path, dim: int, a):
         msd_fit = fit_eta_a(e_arr, np.array([np.mean(Ds[e]) for e in e_arr]),
                             dim=dim, dynamics_label="MC (Brownian proxy)")
 
+    # observation-time-threshold sweep (Kramers-vs-pinned discriminator):
+    # does the apparent arrest density move with the tau_alpha criterion?
+    # Error bars from a bootstrap over the replica axis -- the only
+    # independent axis -- never over snapshots.
+    tsweep = None
+    if len(Ds) >= 4:
+        e_arr = np.array(sorted(Ds))
+        tsweep = threshold_sweep(e_arr,
+                                 np.array([np.mean(Ds[e]) for e in e_arr]))
+        rng = np.random.default_rng(20260818)
+        drifts, cross_boot = [], {}
+        for _ in range(400):
+            Db = [np.mean(rng.choice(Ds[e], size=len(Ds[e]), replace=True))
+                  for e in e_arr]
+            rb = threshold_sweep(e_arr, np.array(Db))
+            if np.isfinite(rb["drift_per_decade"]):
+                drifts.append(rb["drift_per_decade"])
+            for c in rb["crossings"]:
+                cross_boot.setdefault(c["decade"], []).append(c["eta_x"])
+        tsweep["drift_boot_sem"] = (float(np.std(drifts)) if drifts
+                                    else float("nan"))
+        for c in tsweep["crossings"]:
+            bs = cross_boot.get(c["decade"], [])
+            c["eta_x_sem"] = float(np.std(bs)) if len(bs) > 1 else float("nan")
+        tsweep["dynamics_label"] = "MC (Brownian proxy)"
+
     return {"rows": rows, "missing": missing, "null": null, "features": features,
             "pwrap": pwrap_rows, "submode": submode_rows, "msd_fit": msd_fit,
-            "n_replicas": int(n_rep)}
+            "tsweep": tsweep, "n_replicas": int(n_rep)}
 
 
 def main(argv=None) -> int:
@@ -330,6 +358,20 @@ def main(argv=None) -> int:
             m = rep["msd_fit"]
             print(f"  MSD consistency: eta_a={m['eta_a']:.4f} +- {m['err']:.4f} "
                   f"[{m['note'].split(';')[0]}]")
+        ts = rep.get("tsweep")
+        if ts and ts["crossings"]:
+            xs = ", ".join(f"10^-{c['decade']}: {c['eta_x']:.4f}"
+                           + (f"+-{c['eta_x_sem']:.4f}"
+                              if np.isfinite(c.get("eta_x_sem", float("nan")))
+                              else "")
+                           for c in ts["crossings"])
+            print(f"  threshold sweep (D/D0 criterion): {xs}")
+            if np.isfinite(ts["drift_per_decade"]):
+                print(f"    arrest-location drift {ts['drift_per_decade']:+.4f} "
+                      f"+- {ts['drift_boot_sem']:.4f} per decade "
+                      f"[{ts['dynamics_label']}] — a smooth Kramers barrier "
+                      f"predicts steady drift; a pinned geometric feature "
+                      f"predicts the structural observables stay put")
 
     if not all_reports:
         print("no campaign data found; run scripts/run_sweep.py first")
@@ -401,7 +443,8 @@ def main(argv=None) -> int:
              "null": {k: v for k, v in (rep["null"] or {}).items()
                       if not isinstance(v, np.ndarray)},
              "msd_fit": ({k: v for k, v in rep["msd_fit"].items() if k != "windows"}
-                         if rep["msd_fit"] else None)}
+                         if rep["msd_fit"] else None),
+             "tsweep": rep.get("tsweep")}
          for m, rep in all_reports.items()}, indent=2, default=str))
     (out_dir / "report.md").write_text("\n".join(lines) + "\n")
     print(f"\nwrote {out_dir}/report.md, features.json and per-mode CSVs")

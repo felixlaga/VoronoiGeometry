@@ -110,6 +110,9 @@ def main(argv=None) -> int:
     p.add_argument("--eq", type=int, default=None)
     p.add_argument("--prod", type=int, default=None)
     p.add_argument("--nproc", type=int, default=None)
+    p.add_argument("--resume", action="store_true",
+                   help="skip runs whose outputs are complete with identical "
+                        "parameters (makes interrupted campaigns relaunchable)")
     p.add_argument("--dry-run", action="store_true")
     a = p.parse_args(argv)
 
@@ -142,8 +145,12 @@ def main(argv=None) -> int:
 
     exe = build_engine(name="hsmc2d" if preset["dim"] == 2 else "hsmc")
     t0 = time.time()
-    runs = run_sweep(specs, exe, nproc=a.nproc, allow_anneal_failure=True)
+    runs = run_sweep(specs, exe, nproc=a.nproc, allow_anneal_failure=True,
+                     resume=a.resume)
     dt = time.time() - t0
+    n_resumed = sum(1 for r in runs if r.get("resumed"))
+    if n_resumed:
+        print(f"resumed: {n_resumed}/{len(runs)} runs already complete, skipped")
     write_manifest(f"{a.data_dir}/manifest.json", runs,
                    preset=a.preset, grid=[float(g) for g in grid],
                    configurations_per_point=n_cfg, wall_seconds=dt)

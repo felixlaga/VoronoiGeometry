@@ -170,3 +170,61 @@ def fit_eta_a(
         "note": f"{dynamics_label} arrest density; the engine label matters — "
                 "MC and EDMD eta_a are not interchangeable",
     }
+
+
+def threshold_sweep(eta, D, *, max_decades: int = 8) -> dict:
+    """Apparent arrest density as a function of the observation-time criterion.
+
+    Discriminator between a Kramers-type smooth barrier (Babu, arXiv:2607.19185:
+    arrest is ``tau_alpha/tau_0`` crossing a conventional threshold, so the
+    arrest density shifts systematically with the chosen threshold) and a
+    geometric ground state (a structural feature pinned at a fixed density,
+    indifferent to the criterion).  With ``D ~ 1/tau_alpha``, the criterion
+    ladder is ``D_0 / 10^k``: for each decade ``k`` the sweep reports the
+    density ``eta_x(k)`` where the measured ``D(eta)`` first falls below
+    ``D_0 / 10^k`` (log-linear interpolation between bracketing grid points;
+    no extrapolation -- decades not bracketed by the data are absent, never
+    invented).  ``drift_per_decade`` is the slope of ``eta_x`` against ``k``:
+    a smooth-barrier scenario predicts a nonzero, roughly constant drift; a
+    pinned feature predicts the structural observables stay put regardless.
+
+    ``D_0`` is ``D`` at the lowest density point, so the ladder is a relative
+    criterion exactly like ``tau_alpha/tau_0``.  This never measures the
+    barrier itself; it measures only how much the apparent arrest location
+    depends on the convention -- which is the point in dispute.
+    """
+    eta = np.asarray(eta, float)
+    D = np.asarray(D, float)
+    ok = np.isfinite(eta) & np.isfinite(D) & (D > 0)
+    eta, D = eta[ok], D[ok]
+    order = np.argsort(eta)
+    eta, D = eta[order], D[order]
+    if len(eta) < 3:
+        return {"D0": float("nan"), "crossings": [],
+                "drift_per_decade": float("nan"), "drift_err": float("nan")}
+    D0 = D[0]
+    logD = np.log10(D)
+    crossings = []
+    for k in range(1, max_decades + 1):
+        th = np.log10(D0) - k
+        below = np.nonzero(logD <= th)[0]
+        if len(below) == 0 or below[0] == 0:
+            continue
+        j = below[0]
+        i = j - 1
+        f = (logD[i] - th) / (logD[i] - logD[j])
+        crossings.append({"decade": k, "threshold": float(10.0 ** th),
+                          "eta_x": float(eta[i] + f * (eta[j] - eta[i]))})
+    if len(crossings) >= 3:
+        ks = np.array([c["decade"] for c in crossings], float)
+        ex = np.array([c["eta_x"] for c in crossings], float)
+        A = np.vstack([ks, np.ones_like(ks)]).T
+        coef, res, *_ = np.linalg.lstsq(A, ex, rcond=None)
+        dof = len(ks) - 2
+        err = float(np.sqrt(res[0] / dof / np.sum((ks - ks.mean()) ** 2))) \
+            if dof > 0 and len(res) else float("nan")
+        drift, drift_err = float(coef[0]), err
+    else:
+        drift, drift_err = float("nan"), float("nan")
+    return {"D0": float(D0), "crossings": crossings,
+            "drift_per_decade": drift, "drift_err": drift_err}
