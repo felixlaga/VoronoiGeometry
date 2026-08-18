@@ -1,0 +1,82 @@
+{
+  "m0": {
+    "features": {
+      "honeycomb_K3": {
+        "tested": true,
+        "target": 0.6045997880780726,
+        "eta_at_max": 0.6041,
+        "z_raw": 11.125846509582686,
+        "bootstrap_spread": 1.3304864823601619,
+        "z_effective": 8.362239419258472,
+        "z_threshold": 2.3939797998185095,
+        "resolvable": true
+      },
+      "kagome_K2": {
+        "tested": true,
+        "target": 0.6801747615878316,
+        "eta_at_max": 0.677175,
+        "z_raw": -8.453846121707613,
+        "bootstrap_spread": 1.6375271387258445,
+        "z_effective": -5.1625685594960755,
+        "z_threshold": 2.3939797998185095,
+        "resolvable": false
+      },
+      "maple_leaf_K1": {
+        "tested": true,
+        "target": 0.7773425846718076,
+        "eta_at_max": 0.779343,
+        "z_raw": 13.357748157199241,
+        "bootstrap_spread": 1.5045088892334608,
+        "z_effective": 8.878477390721793,
+        "z_threshold": 2.3939797998185095,
+        "resolvable": true
+      }
+    },
+    "null": {
+      "C": 0.4016025966471837,
+      "eta_m": 0.8817656047408615,
+      "p": 1.423996153068913,
+      "eta_m_err": 0.0004194329397538056,
+      "note": "eta_m is a nuisance parameter of the null; the form is known to be wrong near contact percolation (DEBT.md) and eta_m is NEVER quoted as a physical vanishing point"
+    },
+    "msd_fit": {
+      "eta_a": 0.8638239276176604,
+      "b": 5.393324769511908,
+      "err_stat": 0.006788214435991013,
+      "err_window": 0.15283409615641308,
+      "err": 0.15283409615641308,
+      "window_min": 0.6011000069044781,
+      "window_max": 0.9067681992173042,
+      "n_windows": 3990,
+      "n_rejected_unphysical": 763,
+      "note": "MC (Brownian proxy) arrest density; the engine label matters \u2014 MC and EDMD eta_a are not interchangeable"
+    },
+    "tsweep": {
+      "D0": 0.0003734651118824372,
+      "crossings": [
+        {
+          "decade": 1,
+          "threshold": 3.734651118824376e-05,
+          "eta_x": 0.7041509447524993,
+          "eta_x_sem": 0.00026241633226601853
+        },
+        {
+          "decade": 2,
+          "threshold": 3.7346511188243756e-06,
+          "eta_x": 0.7561389007166791,
+          "eta_x_sem": 0.000220582732668665
+        },
+        {
+          "decade": 3,
+          "threshold": 3.7346511188243757e-07,
+          "eta_x": 0.7866785056768792,
+          "eta_x_sem": 0.002440810606596822
+        }
+      ],
+      "drift_per_decade": 0.04126378046218999,
+      "drift_err": 0.0061916056129104925,
+      "drift_boot_sem": 0.0012182849352487665,
+      "dynamics_label": "MC (Brownian proxy)"
+    }
+  }
+}

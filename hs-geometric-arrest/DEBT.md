@@ -116,21 +116,21 @@ scale, and deliberately NOT executed on this machine)
   grafted into the VoronoiGeometry repository (the gate is layout-aware: it
   finds the unique root commit containing the frozen files and demands the
   identical blob in every touching commit; same proof, standalone or nested).
-- **T6 (2D replication, the decision node): launched 2026-08-18 on the
-  build machine** (Apple M4; measured aggregate ~3.6e7 particle-sweeps/s at
-  10 workers -> ~14 h wall-clock at 10, longer at the 7 workers used to keep
-  the machine usable). T6 is now a decision experiment between two live
-  theories: de Graaf-style geometric ground states (feature pinned at
-  0.777343 / possibly 0.680175) vs Babu's Kramers-threshold cage theory
-  (arXiv:2607.19185: smooth crossing, arrest at 0.781 shifting with the
-  observation-time convention). The analysis carries a pre-committed
-  discriminator, `dynamics.threshold_sweep`: the apparent arrest density as
-  a function of the tau_alpha criterion decade, bootstrapped over replicas
-  -- steady drift favours the smooth barrier, pinned structural observables
-  favour the ground state. The sweep is resumable (`--resume`: complete runs
-  with identical parameters are skipped, partial or stale outputs rerun).
-  No 3D physics claim is made anywhere in this repository until the campaign
-  and its analysis complete.
+- **T6 EXECUTED 2026-08-18** (4400/4400 runs, 7.1 h wall on the build
+  machine, zero unreachable points, all audits zero;
+  `results/campaign_2d/`). Outcome: at sem ~ 5e-5, eps* is locally LINEAR
+  through all three fine windows, P_wrap on the frozen refscore is zero
+  everywhere with flat chi and xi, and the apparent dynamical arrest
+  drifts +0.041/decade with the observation-time criterion — no
+  structural feature at 0.777343 or 0.680175. The pre-registered feature
+  test MIS-FIRED (`report.md` says "FEATURE AT 0.777343"): its global
+  power-law null is rejected at chi2/dof = 137 and the max-residual
+  statistic tracks null misfit, proven by an equal-strength "feature" at
+  the honeycomb window deep in the normal fluid. Full forensics in
+  `results/campaign_2d/DIAGNOSTICS.md`. **Open: the smooth-null form must
+  be replaced (free-volume-motivated) and the feature test re-specified
+  before any re-test; the T6 decision (accept the negative / redesign /
+  new observables) is Felix's supervision point. T9 stays blocked.**
 - **T9 (3D campaign) NOT run** (~4800 core-hours) — gated on T6 in any case.
 - **T10 NOT run** on real data (needs campaign output); the driver works end
   to end in `--smoke` mode.
