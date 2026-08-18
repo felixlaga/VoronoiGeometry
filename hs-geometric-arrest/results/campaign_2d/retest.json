@@ -1,0 +1,125 @@
+{
+  "design": {
+    "kink": "deg1/band0.012",
+    "offset": "deg3/band0.045",
+    "alpha_family": 0.05,
+    "n_theory_windows": 3
+  },
+  "inputs": [
+    "results/campaign_2d/m0_eps_star.csv"
+  ],
+  "windows": [
+    {
+      "window": "honeycomb_K3",
+      "target": 0.6045997880780726,
+      "is_control": true,
+      "sb_extension_present": false,
+      "offset": {
+        "tested": true,
+        "target": 0.6045997880780726,
+        "offset": 0.00012113081708541437,
+        "offset_err": 0.00014167698506310376,
+        "z_offset": 0.854978788767011,
+        "n_side": 6,
+        "n_window": 26,
+        "chi2_side_dof": 0.09044681101128002,
+        "p_emp": 0.2893553223388306,
+        "significant": false
+      },
+      "kink": {
+        "tested": true,
+        "target": 0.6045997880780726,
+        "kink": -0.010165716258557092,
+        "kink_err": 0.03572554404545876,
+        "z_kink": -0.2845503554997451,
+        "chi2_dof": 1.5119258541896083,
+        "slope_below": -0.398544838424444,
+        "kink_rel": -0.02550708296397698,
+        "n_points": 32,
+        "design": "fallback (deg3/0.045)",
+        "p_emp": 0.4482758620689655,
+        "significant": false
+      },
+      "sensitivity": {
+        "a95": 0.11541417260800645,
+        "a95_rel": 0.28958892822265625,
+        "z_crit": 1.8966566749413472
+      }
+    },
+    {
+      "window": "kagome_K2",
+      "target": 0.6801747615878316,
+      "is_control": false,
+      "sb_extension_present": false,
+      "offset": {
+        "tested": true,
+        "target": 0.6801747615878316,
+        "offset": 7.8768226046977e-07,
+        "offset_err": 6.541859505412009e-05,
+        "z_offset": 0.012040647767169703,
+        "n_side": 9,
+        "n_window": 25,
+        "chi2_side_dof": 0.5676278001062016,
+        "p_emp": 0.9155422288855573,
+        "significant": false
+      },
+      "kink": {
+        "tested": true,
+        "target": 0.6801747615878316,
+        "kink": -0.00373704549502148,
+        "kink_err": 0.014728547081033373,
+        "z_kink": -0.2537280476112844,
+        "chi2_dof": 1.1197575966327262,
+        "slope_below": -0.28975488713471664,
+        "kink_rel": -0.012897264760487038,
+        "n_points": 34,
+        "design": "fallback (deg3/0.045)",
+        "p_emp": 0.671664167916042,
+        "significant": false
+      },
+      "sensitivity": {
+        "a95": 0.05548963487219637,
+        "a95_rel": 0.19150543212890625,
+        "z_crit": 1.961158160906232
+      }
+    },
+    {
+      "window": "maple_leaf_K1",
+      "target": 0.7773425846718076,
+      "is_control": false,
+      "sb_extension_present": false,
+      "offset": {
+        "tested": true,
+        "target": 0.7773425846718076,
+        "offset": 4.756783070321871e-05,
+        "offset_err": 2.623370318805976e-05,
+        "z_offset": 1.8132335477847883,
+        "n_side": 9,
+        "n_window": 25,
+        "chi2_side_dof": 2.6602578600126185,
+        "p_emp": 0.9035482258870565,
+        "significant": false
+      },
+      "kink": {
+        "tested": true,
+        "target": 0.7773425846718076,
+        "kink": -0.02350208718362807,
+        "kink_err": 0.006538281407120177,
+        "z_kink": -3.594535891042306,
+        "chi2_dof": 1.0301622056596602,
+        "slope_below": -0.2101497465521023,
+        "kink_rel": -0.11183495373762542,
+        "n_points": 34,
+        "design": "fallback (deg3/0.045)",
+        "p_emp": 0.6786606696651675,
+        "significant": false
+      },
+      "sensitivity": {
+        "a95": 0.023376337468945706,
+        "a95_rel": 0.111236572265625,
+        "z_crit": 1.857087932780381
+      }
+    }
+  ],
+  "controls_clean": true
+}
