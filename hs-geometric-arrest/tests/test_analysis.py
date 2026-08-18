@@ -246,3 +246,35 @@ def test_threshold_sweep_arrhenius_vs_pinned():
     # too little data: NaNs, never an invented drift
     r3 = threshold_sweep([0.6, 0.7], [1.0, 0.1])
     assert r3["crossings"] == [] and np.isnan(r3["drift_per_decade"])
+
+
+def test_featuretest_calibration_and_detection():
+    """Sideband/kink tests: unit-normal under a smooth null, detect a large
+    planted kink, and the control geometry never lies about sensitivity."""
+    from hsga.analysis.featuretest import (
+        calibrate, empirical_p, kink_at_target, sideband_offset)
+
+    rng = np.random.default_rng(11)
+    t = 0.6801747615878316
+    fine = np.arange(t - 0.006, t + 0.0061, 5e-4)
+    coarse = np.array([0.64, 0.65, 0.66, 0.67, 0.69, 0.70, 0.71, 0.72])
+    sb = np.array([t - 0.012, t - 0.0085, t - 0.007,
+                   t + 0.007, t + 0.0085, t + 0.012])
+    eta = np.sort(np.concatenate([coarse, fine, sb]))
+    base = 0.04 - 0.185 * (eta - t) + 0.9 * (eta - t) ** 2
+    sem = np.full(len(eta), 5e-5)
+
+    null = calibrate(eta, base, sem, t, n_synth=300, degree=1, band=0.012)
+    assert 0.8 < null["z_kink_null"].std() < 1.25   # unit-normal spread
+    # curvature shifts the null centre; the centred p handles it
+
+    y = base + rng.normal(0, sem)
+    r = kink_at_target(eta, y, sem, t, degree=1, band=0.012)
+    assert empirical_p(r["z_kink"], null["z_kink_null"]) > 0.05   # smooth: null
+
+    y2 = base + 0.30 * 0.185 * np.clip(eta - t, 0, None) + rng.normal(0, sem)
+    r2 = kink_at_target(eta, y2, sem, t, degree=1, band=0.012)
+    assert empirical_p(r2["z_kink"], null["z_kink_null"]) < 0.01  # 30%: found
+
+    off = sideband_offset(eta, y2 + 3e-4, sem, t)   # level shift
+    assert off["tested"] and abs(off["z_offset"]) > 3
