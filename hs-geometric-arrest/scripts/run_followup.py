@@ -303,10 +303,94 @@ def stab3_specs():
     return specs
 
 
+def build_3d_ladder_cfgs():
+    """3D rigidity-ladder seeds: the four depleted-FCC rungs plus FCC and a
+    BCC control, on cubic tori.
+
+    FCC sites are the even-parity integer points; the modular vacancy rules
+    (REFERENCE_VALUES / coloring.MODULAR_RULES_3D) act on those integer
+    coordinates, so the cubic side must be a multiple of both 2 (FCC
+    periodicity) and the rule modulus.  Occupied coordination z = 12 - K is
+    verified exactly, as is the per-site vacancy count K.  BCC (z = 8, NOT
+    tangential -- no 14-faced tangential cell exists, Sec. III of the
+    paper) probes whether 3D rigidity needs tangentiality or only z: it is
+    hyperstatic by counting yet shear-soft as a sphere packing.
+    """
+    out_dir = DATA / "stab3d"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    rules = {
+        "K4": (8, 2, lambda x, y, z: x % 2 == 0 and y % 2 == 0 and z % 2 == 0),
+        "K3": (10, 5, lambda x, y, z: (y + 2 * z) % 5 == 0),
+        "K2": (14, 7, lambda x, y, z: (x + 2 * y + 3 * z) % 7 == 0),
+        "K1": (26, 13, lambda x, y, z: (x + 3 * y + 4 * z) % 13 == 0),
+        "fcc": (8, 1, lambda x, y, z: False),
+    }
+    files = []
+    for name, (L, mod, vacant) in rules.items():
+        assert L % 2 == 0 and L % mod == 0
+        occ, vac = [], set()
+        for x in range(L):
+            for y in range(L):
+                for z in range(L):
+                    if (x + y + z) % 2:
+                        continue
+                    (vac.add if vacant(x, y, z) else
+                     lambda q: occ.append(q))((x, y, z))
+        P = np.array(occ, float)
+        K_want = {"K4": 4, "K3": 3, "K2": 2, "K1": 1, "fcc": 0}[name]
+        # coordination on the torus at nearest-neighbour distance sqrt(2)
+        d = P[None] - P[:, None]
+        d -= L * np.round(d / L)
+        D = np.linalg.norm(d, axis=-1)
+        np.fill_diagonal(D, np.inf)
+        zc = (D < 1.5).sum(axis=1)
+        if not np.all(zc == 12 - K_want):
+            raise RuntimeError(f"{name}: z={np.bincount(zc)} != {12-K_want}")
+        files.append(_write_seed(out_dir, name, P, L, np.sqrt(2.0)))
+    # BCC control: two interpenetrating cubic grids, nn distance sqrt(3)/2
+    Lb = 7
+    pts = [(i, j, k) for i in range(Lb) for j in range(Lb) for k in range(Lb)]
+    pts += [(i + .5, j + .5, k + .5) for i, j, k in pts]
+    P = np.array(pts, float)
+    files.append(_write_seed(out_dir, "bcc", P, Lb, np.sqrt(3.0) / 2))
+    return files
+
+
+def _write_seed(out_dir, name, P, L, contact):
+    out = []
+    for shrink in (0.999, 0.995, 0.99, 0.98, 0.96):
+        r = shrink * contact / 2.0
+        f = out_dir / f"seed_{name}_s{shrink}.cfg"
+        with open(f, "w") as fh:
+            fh.write(f"{len(P)} {float(L):.10f}\n")
+            for x, y, z in P:
+                fh.write(f"{x % L:.8f} {y % L:.8f} {z % L:.8f} {r:.8f}\n")
+        phi = len(P) * 4 / 3 * np.pi * r**3 / L**3
+        out.append((name, shrink, str(f), phi))
+    print(f"  {name}: N={len(P)} phi(contact)="
+          f"{len(P)*4/3*np.pi*(contact/2)**3/float(L)**3:.6f}")
+    return out
+
+
+def stab3d_specs():
+    specs = []
+    for group in build_3d_ladder_cfgs():
+        for name, shrink, f, phi in group:
+            for rep in range(2):
+                tag = f"stab3d|{name}|{shrink}|{rep}"
+                specs.append(RunSpec(
+                    eta=round(phi, 6), dim=3, ncell=4, mode=0,
+                    seed=seed_for(tag), eq=0, prod=150_000, nsnap=30, melt=0,
+                    infile=f, inframe=0,
+                    prefix=str(DATA / "stab3d" / f"{name}_s{shrink}_r{rep}")))
+    return specs
+
+
 GROUPS = [("sb", sb_specs), ("ctrl", ctrl_specs), ("eq", eq_specs),
           ("stab", stab_specs), ("comp", comp_specs),
           ("fs12", lambda: fs_specs(12, 44)), ("fs32", lambda: fs_specs(32, 32)),
-          ("stab2", stab2_specs), ("stab3", stab3_specs)]
+          ("stab2", stab2_specs), ("stab3", stab3_specs),
+          ("stab3d", stab3d_specs)]
 
 
 def main(argv=None) -> int:
@@ -317,7 +401,6 @@ def main(argv=None) -> int:
     p.add_argument("--dry-run", action="store_true")
     a = p.parse_args(argv)
 
-    exe = build_engine(name="hsmc2d")
     total_ps = 0
     plan = []
     for gname, fn in GROUPS:
@@ -336,7 +419,9 @@ def main(argv=None) -> int:
         return 0
     for gname, specs in plan:
         t0 = time.time()
-        print(f"\n=== running group {gname} ({len(specs)} runs) ===", flush=True)
+        exe = build_engine(name="hsmc" if specs[0].dim == 3 else "hsmc2d")
+        print(f"\n=== running group {gname} ({len(specs)} runs, "
+              f"dim={specs[0].dim}) ===", flush=True)
         runs = run_sweep(specs, exe, nproc=a.nproc, allow_anneal_failure=True,
                          resume=True)
         n_un = sum(1 for r in runs if r["unreachable"])
