@@ -36,7 +36,20 @@ signature is found to be degenerate with the median Voronoi face gap and shows n
 feature at arrest, while the shell-percolation threshold $\varepsilon^*(\eta)$ is
 composition-independent to $4.3\%$ across very different size distributions. We
 argue that $\varepsilon^*(\eta)$, not the diffusion coefficient, is the estimator
-on which a decisive test should be built.
+on which a decisive test should be built -- and we execute that test in two
+dimensions: $4400$ runs at $N=2016$ resolve $\varepsilon^*(\phi)$ to $0.3\%$ on
+fine grids through every rung and find no feature at any of them. A calibrated
+local test with simulated null-density control windows excludes any
+transition-like slope change above $10.7\%$ at $\sqrt{3}\pi/7$ and $14.4\%$ at
+the intermediate rung $k{=}4$ (kagome, $\phi=\sqrt{3}\pi/8$), robustly across
+composition and system size, while the apparent dynamical arrest density shifts
+with the observation-time criterion by $+0.041$ per decade. The ladder is
+instead realised mechanically: seeded dilution confirms the zero-parameter
+rigidity hierarchy set by the contact count $z=6-K$ against the Maxwell
+threshold -- honeycomb floppy, kagome exactly isostatic and thermally marginal,
+maple-leaf hyperstatic with a finite stability margin -- so the rung densities
+are stability points of depleted solids rather than equilibrium attractors. In
+three dimensions every rung of the ladder is hyperstatic.
 \end{abstract}
 
 \maketitle
@@ -311,7 +324,8 @@ value is therefore nearly free, and far weaker than the corresponding
 two-dimensional coincidence, where $0.777$ was isolated. Any test must be
 mechanistic.
 
-\section{Numerical test}
+\section{Pilot numerical test}
+\label{sec:pilot}
 
 \subsection{Method}
 
@@ -417,6 +431,164 @@ spreads of $0.15$ and $0.13$, indicating the assumed form is wrong near contact
 percolation; restricted windows converge to $0.675$ and $0.633$, bracketing
 random close packing.
 
+\section{The two-dimensional replication campaign}
+\label{sec:campaign}
+
+\subsection{Design}
+
+The pilot fixed the requirements of a decisive test: $\varepsilon^*(\phi)$
+resolved at $\sim10^2$--$10^3$ configurations per density, fine density
+resolution inside pre-declared windows of the exact rung values, and error
+bars taken over independent replicas only. Between pilot and campaign the
+stakes widened: a mean-field cage theory [arXiv:2607.19185] now places a
+smooth, convention-dependent arrest crossing at $\phi\approx0.781$, so the
+same published data window that motivated the geometric reading also
+``corroborates'' a theory in which no structural feature exists at any
+special density. The two pictures are distinguished mechanistically, not by
+location: a geometric ground state pins a structural feature at a rung,
+independent of composition and of the observation-time convention; a
+barrier-crossing threshold predicts no structural feature anywhere and an
+apparent arrest density that shifts with the time criterion.
+
+The campaign comprises $4400$ runs: binary $1{:}1$ disks at $R^{-1}=1.4$,
+$N=2016$, $100$ densities on $\phi\in[0.580,0.826]$ with steps of
+$5\times10^{-4}$ inside windows of half-width $0.006$ centred on the exact
+rungs $0.604600$ ($K{=}3$), $0.680175$ ($K{=}2$) and $0.777343$ ($K{=}1$),
+and $44$ independent replicas per density ($352$ configurations each,
+snapshots within a run never counted as independent). Initialisation anneals
+every configuration to exactly zero overlap; all $4400$ final overlap audits
+returned zero; no state point up to $\phi=0.826$ failed to equilibrate its
+overlaps. Production runs use local moves only. The reference-cell score
+used for the mechanistic observable $P^{(k)}_{\mathrm{wrap}}$ was frozen,
+with weights and filters, in the repository's first commit, before any
+campaign data existed. The resulting $\varepsilon^*(\phi)$ carries an
+absolute standard error of $2\times10^{-5}$--$2\times10^{-4}$ per density,
+about $0.3\%$, thirty times the pilot precision.
+
+\subsection{A calibrated local feature test}
+
+At this precision the smooth-null methodology of the pilot fails in an
+instructive way. The three-parameter form
+$\varepsilon^*=C(\phi_m-\phi)^p$, adequate at pilot statistics, is rejected
+by its own fit ($\chi^2/\mathrm{dof}=137$); its residuals weave between
+$-64$ and $+15$ standard errors across the grid, and a max-residual window
+statistic normalised by replica bootstrap inherits that misfit unboundedly
+as the errors shrink. The internal control that exposes this is the
+honeycomb window: the statistic reports an $8.4\sigma$ ``feature'' at
+$\phi=0.6046$, deep in the normal fluid, where neither theory predicts
+anything. No conclusion drawn from a global parametric null survives data
+substantially more precise than the null form is accurate; we report this
+failure because the same trap plausibly affects any study fitting smooth
+forms through high-precision structural data.
+
+The replacement uses no global functional form. For each window, (i) an
+\emph{offset test}: a cubic is fitted to the sidebands alone
+($0.006<|\phi-\phi_k|\leq0.045$) and its prediction, with propagated
+covariance, is compared with the precision-weighted mean of the window
+points; (ii) a \emph{kink test}: over $|\phi-\phi_k|\leq0.012$ (the window
+plus a dedicated near-sideband grid at offsets $0.007$--$0.012$), a straight
+line plus a slope-discontinuity term pinned at exactly $\phi_k$ -- the
+theories under test predict the location, so no breakpoint is searched.
+Significance is never read from a Gaussian table: each statistic is
+calibrated on $2\times10^3$ synthetic smooth curves carrying the measured
+noise, p-values are taken from these distributions (centred on the
+calibrated null, since local curvature leaks deterministically into the
+hinge), and the family of three theory windows is Bonferroni-corrected.
+Two \emph{control windows} at the null densities $0.6300$ and $0.7250$ were
+simulated with identical grid geometry and statistics: the procedure is
+declared invalid if it fires there. Finally, signal injection quantifies
+sensitivity: the smallest slope change detected with $95\%$ power.
+
+\subsection{No feature at any rung}
+
+\begin{table}[t]
+\caption{Calibrated feature test on the campaign $\varepsilon^*(\phi)$.
+$p$-values are empirical, from synthetic-noise calibration; the last column
+is the smallest slope discontinuity at $\phi_k$ that would have been
+detected with $95\%$ power. The honeycomb window (normal fluid) and the two
+null-density windows are negative controls.}
+\label{tab:retest}
+\begin{ruledtabular}
+\begin{tabular}{lccccc}
+window & $z_{\mathrm{off}}$ & $p_{\mathrm{off}}$ & $z_{\mathrm{kink}}$ &
+$p_{\mathrm{kink}}$ & excluded kink\\
+\colrule
+honeycomb $0.6046$ & $-0.64$ & $0.52$ & $1.75$ & $0.96$ & $\geq17\%$\\
+kagome $0.680175$ & $-0.48$ & $0.50$ & $0.55$ & $0.95$ & $\geq14.4\%$\\
+maple-leaf $0.777343$ & $3.81$ & $0.28$ & $-3.44$ & $0.98$ & $\geq10.7\%$\\
+control $0.6300$ & $0.05$ & $0.87$ & $0.80$ & $0.78$ & $\geq16\%$\\
+control $0.7250$ & $0.74$ & $0.56$ & $0.20$ & $0.87$ & $\geq12.5\%$\\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+Table~\ref{tab:retest} summarises the outcome: every window is null and both
+controls are clean. Inside each fine window $\varepsilon^*(\phi)$ is,
+independently of any null model, consistent with a straight line
+($\chi^2/\mathrm{dof}=0.8$--$1.6$; a free breakpoint improves nothing,
+$F$-test $p=0.22$--$0.73$). Any transition-like slope change of
+$\geq10.7\%$ at $\sqrt{3}\pi/7$ and $\geq14.4\%$ at $\sqrt{3}\pi/8$ is
+excluded at $95\%$ power; a genuine arrest transition implies order-unity
+slope changes. The null at the kagome rung is robust in a second
+composition ($R^{-1}=1.7$: $p=0.98$) and across system size
+($N=504$: $p=0.87$; $N=3520$: $p=0.79$). The mechanistic observable is
+silent: $P^{(k)}_{\mathrm{wrap}}=0$ in every structural sample at every
+density and size, with flat marked-cluster susceptibility and
+sub-diameter cluster sizes; the fraction of large-particle cells whose
+local $q$ sits at a rung value is zero (kagome) or decays to zero
+(maple-leaf). Equilibration was verified directly: sixteen replicas at
+tripled equilibration reproduce the campaign $\varepsilon^*$ at all three
+rungs ($|z|\leq1.2$) but not at $\phi=0.800$ ($z=4.9$), locating the
+campaign's equilibration ceiling at $\phi\approx0.79$; no test statistic's
+inner band reaches that region. Finally, the apparent dynamical arrest
+density is convention-dependent, moving from $0.704$ to $0.756$ to
+$0.787$ as the diffusion criterion drops by successive decades
+($+0.0413\pm0.0012$ per decade, Monte Carlo proxy dynamics) -- the
+behaviour the barrier-crossing picture requires, and three decades cannot
+distinguish perpetual drift from eventual pinning above $0.79$.
+
+\section{Mechanical character of the ladder states}
+\label{sec:mech}
+
+The ensemble null does not settle what the ladder states \emph{are}. The
+counting identity of Sec.~\ref{sec:ladder} fixes the contact number of
+every occupied site: $z=z_0-K$, hence in two dimensions $z=6-K$. Against
+the Maxwell threshold $z=2d=4$ this makes a zero-parameter mechanical
+prediction for the entire family: the $K{=}3$ honeycomb ($z{=}3$) is
+floppy, the $K{=}2$ kagome ($z{=}4$) is exactly isostatic, and the $K{=}1$
+maple-leaf ($z{=}5$) is hyperstatic and should hold a finite rigidity
+margin.
+
+We test this by seeded dilution: the exact packing (coordination verified;
+box strain $\lesssim1\%$ from square-box commensuration) is placed in the
+Monte Carlo cell with all radii shrunk by a factor $s$, and melting is
+scored by the mean-squared displacement after $1.5\times10^5$ sweeps
+(rigid: $\mathrm{MSD}<0.1\,\sigma^2$; three seeds per point). The
+honeycomb melts immediately at every dilution
+($\mathrm{MSD}\approx40\,\sigma^2$ at $s=0.999$). The kagome is rigid at
+$s=0.999$ -- alive but caged, acceptance $9\times10^{-4}$,
+$\mathrm{MSD}\to7\times10^{-5}\,\sigma^2$, while a hexagonal control at
+the \emph{same} density melts completely -- and loses rigidity by
+$s=0.995$, indistinguishable in this respect from a square-lattice control
+with the same $z=4$. The maple-leaf remains rigid through $s=0.99$ and
+melts only at $s=0.98$: a stability margin an order of magnitude wider
+than the isostatic rung's, as hyperstaticity requires. All three rungs
+thus behave exactly as $z=6-K$ predicts.
+
+Two conclusions follow. First, the kagome state is mechanically real but
+marginal: rigid only at contact, with no thermal margin, it cannot act as
+an attractor of the equilibrium dynamics -- consistent with, and partly
+explaining, the ensemble null at its density. Second, the maple-leaf
+density $\sqrt{3}\pi/7$ \emph{is} mechanically meaningful: it is the
+density of a hyperstatic depleted solid with a finite stability basin,
+even though no equilibrium signature exists there at our sensitivity. In
+three dimensions the same identity gives $z=12-K\geq8>2d=6$ for every
+rung of Eq.~\eqref{eq:ladder}: the entire three-dimensional ladder is
+hyperstatic, the two-dimensional marginality of the middle rung has no
+analogue, and the mechanical -- as opposed to ensemble -- behaviour of
+the three-dimensional family is an open question that the seeded-dilution
+protocol answers cheaply.
+
 \section{Discussion}
 \label{sec:disc}
 
@@ -427,38 +599,58 @@ lattices; BCC-derived cells are excluded structurally; and the depleted
 close-packed states form the discrete ladder of Eq.~\eqref{eq:ladder}, which
 subsumes both two-dimensional structures of the original work.
 
-The physics is not settled, and our pilot is not able to settle it. Its useful
-contribution is negative and methodological. The observable that would most
-directly test the mechanism is degenerate and shows no feature; the estimator
-originally proposed for the arrest density is dominated by a fit-window
-systematic; and the one observable that behaves well, $\varepsilon^*(\eta)$,
-requires no long-time dynamics at all. This last point substantially reduces the
-cost of a decisive experiment: short equilibrations at many densities with of
-order $10^2$ configurations each, rather than long dynamical runs, suffice to
-resolve the local exponent of $\varepsilon^*(\eta)$ and to test whether any
-feature in it is composition-independent.
+The two-dimensional physics is now settled at stated sensitivity, and the
+answer is negative for the ensemble mechanism. The replication campaign of
+Sec.~\ref{sec:campaign} finds $\varepsilon^*(\phi)$ locally linear through
+every rung window at $0.3\%$ precision; any transition-like slope change of
+$\geq10.7\%$ at $\sqrt{3}\pi/7$ is excluded at $95\%$ power, the null is
+reproduced in a second composition and at three system sizes, the
+pre-registered mechanistic observable $P^{(k)}_{\mathrm{wrap}}$ never fires,
+and the apparent arrest density moves with the observation-time convention.
+On these observables the data favour a smooth, convention-dependent crossing
+[arXiv:2607.19185] over a structural transition pinned at a rung: the
+published two-dimensional signature at $\sqrt{3}\pi/7$ is not reproduced at
+thirty times the original statistics, and our own pre-registered global-null
+test -- which produced an $8.4\sigma$ artefact in the normal fluid before
+recalibration -- illustrates the class of analysis error that most plausibly
+generated it. The scope of the negative is explicit: one system size range
+($N\leq3520$), two binary compositions, the $\varepsilon^*$ and
+frozen-refscore observable families, Monte Carlo proxy dynamics over three
+decades, and equilibration verified up to $\phi\approx0.79$.
 
-The decisive question is accordingly narrow: does the composition-independent
-$\varepsilon^*(\eta)$ curve possess a resolvable feature, and if so does it lie at
-one of $0.523599$, $0.555360$, $0.592384$, $0.604600$, $0.634698$, $0.683520$? A
-negative answer is as informative as a positive one, and given the density of the
-admissible ladder it must be established mechanistically rather than by numerical
-coincidence.
+What survives -- and sharpens -- is the geometry and its mechanics. The
+counting identity behind the ladder fixes $z=z_0-K$, and
+Sec.~\ref{sec:mech} confirms the resulting zero-parameter rigidity
+hierarchy experimentally: floppy at $z=3$, isostatic and thermally marginal
+at $z=4$, hyperstatic with a finite dilution margin at $z=5$. The rung
+densities are therefore real as stability points of depleted solids -- the
+maple-leaf state is a mechanically stable phase-like object at
+$\sqrt{3}\pi/7$ -- while playing no detectable role as equilibrium
+attractors, which the marginality of the isostatic rung partly explains. In
+three dimensions every rung is hyperstatic ($z=12-K\geq8$), so the
+two-dimensional marginality has no analogue there; the mechanical behaviour
+of the three-dimensional ladder, not another ensemble campaign, is the
+question our two-dimensional result leaves open, and the seeded-dilution
+protocol answers it at negligible cost.
 
-Finally, the thermodynamic objection raised against the two-dimensional
-argument is partially answered by the degeneracy result of
-Sec.~\ref{sec:ladder}: the reference state at $\eta_K$ is not a single
-realisation but a family that provably contains non-crystalline members, all
-exactly tangential at exactly $\eta_K$. If the family is extensive the
-reference states carry configurational entropy, and the mechanism no longer
-requires a fluid to feel a unique crystal. Whether the count grows
-exponentially with system size is a sharp combinatorial question, cheap to
-attack, and in our view the most important open theory item.
+The thermodynamic objection raised against the two-dimensional argument is
+also now quantified. Exhaustive enumeration of the uniform-$K$ states on
+periodic cells shows the $K{=}3$ and $K{=}1$ states unique up to symmetry,
+while the $K{=}2$ class is degenerate with provably non-crystalline members,
+all exactly tangential at exactly $\eta_K$ -- but the count obeys
+$S=6\cdot2^{L/2}-8$ exactly on $L\times L$ cells, a boundary law
+($\ln S\sim\sqrt{N}$) carrying no configurational entropy density. The
+degenerate family softens the uniqueness objection without supplying the
+extensive entropy that an equilibrium mechanism would need; the campaign's
+null is consistent with both facts.
 
 \section*{Code and data availability}
 
 All geometry in Secs.~\ref{sec:theorem}--\ref{sec:corrections} is reproduced by
 \texttt{enumerate\_3d\_ground\_states.py} from lattice vectors alone. The Monte
-Carlo engine, analysis pipeline and percolation code are provided.
+Carlo engine, analysis pipeline and percolation code are provided, together
+with the campaign manifests, the frozen reference score, the calibrated
+feature test, and per-run logs sufficient to reproduce every number in
+Secs.~\ref{sec:campaign} and \ref{sec:mech} from the raw configurations.
 
 \end{document}

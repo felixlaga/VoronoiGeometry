@@ -154,9 +154,16 @@ scale, and deliberately NOT executed on this machine)
 - **T9 (3D campaign) NOT run** (~4800 core-hours) — gated on T6 in any case.
 - **T10 NOT run** on real data (needs campaign output); the driver works end
   to end in `--smoke` mode.
-- **T11 open:** `paper/paper.tex` Secs. VI–VII still describe the pilot;
-  updating them requires campaign results that do not exist, and writing them
-  without data would violate rule 1. `make paper` builds when a TeX
+- **T11 CLOSED for 2D (2026-08-19):** the manuscript now carries the
+  campaign: Sec. VII (replication, calibrated test, exclusions), Sec. VIII
+  (rigidity ladder), rewritten Discussion and abstract, all numbers from
+  committed results. `paper/paper_preview.pdf` is STALE (predates these
+  sections; no TeX on this machine -- rebuild with `make paper` where TeX
+  exists). Before submission: literature-positioning pass (kagome
+  isostaticity and Maxwell/topological mechanics are established fields --
+  the paper must claim only the ladder derivation, the depletion route, the
+  maple-leaf margin and the arrest connection as new), and the Babu
+  citation should become a proper bibliography entry. `make paper` builds when a TeX
   installation is present (article-class fallback when revtex4-2 is missing —
   landmine 8); this machine has no TeX, so `paper/paper_preview.pdf` is the
   checked-in build from the handoff.
