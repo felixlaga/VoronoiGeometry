@@ -181,9 +181,63 @@ def stab_specs():
     return specs
 
 
+def build_dilution_cfgs():
+    """Dilution ladder for the stability margin: kagome and hexagonal each
+    relative to their OWN contact density, plus a square-lattice control --
+    z = 4 like kagome but NOT tangential (unbraced; mechanically unstable
+    for disks).  If square collapses while kagome holds at equal gap, the
+    rigidity is a property of the tangential geometry, not of z."""
+    out_dir = DATA / "stab2"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    files = []
+    base = {}
+    for name in ("kagome", "hex"):
+        lines = (DATA / "stab" / f"seed_{name}.cfg").read_text().splitlines()
+        n, L = lines[0].split()
+        pts = [tuple(map(float, ln.split())) for ln in lines[1:]]
+        base[name] = (float(L), [(x, y) for x, y, _ in pts])
+    # square lattice 54x54, a = 1
+    nsq = 54
+    base["square"] = (float(nsq), [((i + 0.5), (j + 0.5))
+                                   for j in range(nsq) for i in range(nsq)])
+    for name, (L, pts) in base.items():
+        P = np.array(pts)
+        best = np.inf
+        for dx in (-L, 0.0, L):
+            for dy in (-L, 0.0, L):
+                D = np.linalg.norm(P[None] + [dx, dy] - P[:, None], axis=-1)
+                if dx == 0 and dy == 0:
+                    np.fill_diagonal(D, np.inf)
+                best = min(best, float(D.min()))
+        for shrink in (0.999, 0.995, 0.99, 0.98, 0.96):
+            r = shrink * best / 2.0
+            f = out_dir / f"seed_{name}_s{shrink}.cfg"
+            with open(f, "w") as fh:
+                fh.write(f"{len(pts)} {L:.10f}\n")
+                for x, y in pts:
+                    fh.write(f"{x:.8f} {y:.8f} {r:.8f}\n")
+            phi = len(pts) * np.pi * r * r / (L * L)
+            files.append((name, shrink, str(f), phi))
+    return files
+
+
+def stab2_specs():
+    specs = []
+    for name, shrink, f, phi in build_dilution_cfgs():
+        for rep in range(3):
+            tag = f"stab2|{name}|{shrink}|{rep}"
+            specs.append(RunSpec(
+                eta=round(phi, 6), dim=2, ncell=24, mode=0,
+                seed=seed_for(tag), eq=0, prod=150_000, nsnap=30, melt=0,
+                infile=f, inframe=0,
+                prefix=str(DATA / "stab2" / f"{name}_s{shrink}_r{rep}")))
+    return specs
+
+
 GROUPS = [("sb", sb_specs), ("ctrl", ctrl_specs), ("eq", eq_specs),
           ("stab", stab_specs), ("comp", comp_specs),
-          ("fs12", lambda: fs_specs(12, 44)), ("fs32", lambda: fs_specs(32, 32))]
+          ("fs12", lambda: fs_specs(12, 44)), ("fs32", lambda: fs_specs(32, 32)),
+          ("stab2", stab2_specs)]
 
 
 def main(argv=None) -> int:
