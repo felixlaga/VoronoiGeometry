@@ -234,10 +234,79 @@ def stab2_specs():
     return specs
 
 
+def build_ladder_cfgs():
+    """Rigidity-ladder seeds: maple-leaf (K=1, z=5, hyperstatic) and
+    honeycomb (K=3, z=3, floppy) on near-commensurate triangular tori.
+
+    Prediction from the counting identity: occupied sites keep z = 6 - K
+    contacts; 2D rigidity needs z >= 4, so the ladder is floppy (K=3) /
+    marginal (K=2, measured) / rigid-with-margin (K=1).  Generator-coord
+    rules mapped to the row-offset embedding via g = i - j//2, h = j;
+    torus periodicity requires nx = 0 (mod m) and ny = 0 (mod 2m) for a
+    modulus-m rule with even-row embedding.  Coordination is verified
+    exactly; the builder refuses wrong geometry.  Box strain ~1%.
+    """
+    out_dir = DATA / "stab3"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    lattices = {
+        # name: (nx, ny, vacancy rule in generator coords, expected z)
+        "maple": (49, 56, lambda g, h: (g + 3 * h) % 7 == 0, 5),
+        "honey": (24, 28, lambda g, h: (g - h) % 3 == 0, 3),
+    }
+    files = []
+    for name, (nx, ny, vacant, z_want) in lattices.items():
+        L = float(nx)
+        pts = []
+        for j in range(ny):
+            yy = (j + 0.5) * L / ny
+            for i in range(nx):
+                g, h = i - j // 2, j
+                if not vacant(g, h):
+                    pts.append((((i + 0.5 * (j % 2) + 0.25) % nx), yy))
+        P = np.array(pts)
+        best = np.inf
+        counts = np.zeros(len(P), int)
+        for dx in (-L, 0.0, L):
+            for dy in (-L, 0.0, L):
+                D = np.linalg.norm(P[None] + [dx, dy] - P[:, None], axis=-1)
+                if dx == 0 and dy == 0:
+                    np.fill_diagonal(D, np.inf)
+                counts += (D < 1.25).sum(axis=1)
+                best = min(best, float(D.min()))
+        if not np.all(counts == z_want):
+            raise RuntimeError(f"{name}: coordination {np.bincount(counts)} "
+                               f"!= z={z_want}")
+        for shrink in (0.999, 0.995, 0.99, 0.98, 0.96):
+            r = shrink * best / 2.0
+            f = out_dir / f"seed_{name}_s{shrink}.cfg"
+            with open(f, "w") as fh:
+                fh.write(f"{len(pts)} {L:.10f}\n")
+                for x, y in pts:
+                    fh.write(f"{x:.8f} {y:.8f} {r:.8f}\n")
+            phi = len(pts) * np.pi * r * r / (L * L)
+            files.append((name, shrink, str(f), phi))
+        print(f"  {name}: N={len(pts)} z={z_want} verified, "
+              f"phi(contact)={len(pts)*np.pi*(best/2)**2/L**2:.6f}")
+    return files
+
+
+def stab3_specs():
+    specs = []
+    for name, shrink, f, phi in build_ladder_cfgs():
+        for rep in range(3):
+            tag = f"stab3|{name}|{shrink}|{rep}"
+            specs.append(RunSpec(
+                eta=round(phi, 6), dim=2, ncell=24, mode=0,
+                seed=seed_for(tag), eq=0, prod=150_000, nsnap=30, melt=0,
+                infile=f, inframe=0,
+                prefix=str(DATA / "stab3" / f"{name}_s{shrink}_r{rep}")))
+    return specs
+
+
 GROUPS = [("sb", sb_specs), ("ctrl", ctrl_specs), ("eq", eq_specs),
           ("stab", stab_specs), ("comp", comp_specs),
           ("fs12", lambda: fs_specs(12, 44)), ("fs32", lambda: fs_specs(32, 32)),
-          ("stab2", stab2_specs)]
+          ("stab2", stab2_specs), ("stab3", stab3_specs)]
 
 
 def main(argv=None) -> int:

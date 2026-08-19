@@ -131,6 +131,26 @@ scale, and deliberately NOT executed on this machine)
   be replaced (free-volume-motivated) and the feature test re-specified
   before any re-test; the T6 decision (accept the negative / redesign /
   new observables) is Felix's supervision point. T9 stays blocked.**
+- **T6 re-test EXECUTED 2026-08-19** (redesigned, calibrated; design
+  frozen at 1a7b921 before its data; 8054 follow-up runs, zero
+  unreachable): all five windows null with empirical p 0.28-0.98, both
+  null-density control windows clean, kink >= 10.7% slope change
+  excluded at maple-leaf / >= 14.4% at kagome (95% power); kagome null
+  robust in a second composition (R^-1=1.7) and across N=504/2016/3520.
+  Equilibration verified at all three targets; a REAL equilibration
+  limit found at phi=0.800 (z=4.9): campaign points at phi >~ 0.79 are
+  biased and must not be used quantitatively. Full record:
+  results/campaign_2d/T6_ADDENDUM_1.md, retest.json, followup.json.
+- **Kagome thermodynamic relevance: CLOSED, negative** (seeded
+  stability + dilution ladder): the exact K2 packing is rigid at
+  contact (isostatic z=4) with zero thermal margin, marginal exactly
+  like the non-tangential z=4 square control. Mechanically real,
+  thermodynamically irrelevant.
+- **OPEN — the rigidity ladder** (new, from the counting identity):
+  z = 6-K vs the threshold 2d=4 predicts floppy (K=3) / marginal (K=2,
+  confirmed) / hyperstatic-rigid (K=1, maple-leaf). stab3 measurement
+  launched; in 3D all rungs are hyperstatic (z = 12-K >= 8 > 6) --
+  qualitatively different mechanics, candidate impact direction.
 - **T9 (3D campaign) NOT run** (~4800 core-hours) — gated on T6 in any case.
 - **T10 NOT run** on real data (needs campaign output); the driver works end
   to end in `--smoke` mode.

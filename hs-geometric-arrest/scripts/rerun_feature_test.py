@@ -57,20 +57,23 @@ def load_t6():
     return eta, eps, sem
 
 
+def _reduce_one(c):
+    """Per-run eps* mean over frames (module-level: must pickle for spawn)."""
+    eta = float(Path(c).name.split("_")[0][1:])
+    vals = [eps_star(p, r, L) for p, r, L in read_frames(c, dim=2)]
+    vals = [v for v in vals if np.isfinite(v)]
+    return eta, float(np.mean(vals)) if vals else float("nan")
+
+
 def reduce_group(gdir: Path, nproc=None):
     """eps* mean/sem per density from a followup group's raw runs."""
     from collections import defaultdict
     from concurrent.futures import ProcessPoolExecutor
 
-    cfgs = sorted(gdir.glob("m*/e*_r*.cfg"))
+    cfgs = [str(c) for c in sorted(gdir.glob("m*/e*_r*.cfg"))]
     per = defaultdict(list)
-    def one(c):
-        eta = float(c.name.split("_")[0][1:])
-        vals = [eps_star(p, r, L) for p, r, L in read_frames(c, dim=2)]
-        vals = [v for v in vals if np.isfinite(v)]
-        return eta, float(np.mean(vals)) if vals else np.nan
     with ProcessPoolExecutor(max_workers=nproc) as ex:
-        for eta, v in ex.map(one, cfgs, chunksize=8):
+        for eta, v in ex.map(_reduce_one, cfgs, chunksize=8):
             if np.isfinite(v):
                 per[eta].append(v)
     eta = np.array(sorted(per))
